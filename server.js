@@ -73,6 +73,7 @@ client.on('message', (channel, tags, message, self) => {
 			})
 			.catch((error) => {
 			    console.log(error);
+			    client.say(channel, `@${tags.username}, I couldn't find that charater, please ensure that you are giving realm-character. Character should include all special characters.`);
 			});
 		}else{
 			var getURL = 'https://us.api.blizzard.com/profile/wow/character/'+playerInfo[0]+'/'+playerInfo[1]+'/achievements';
@@ -87,6 +88,10 @@ client.on('message', (channel, tags, message, self) => {
 			})
 			.then((achievementPoints) =>{
 				client.say(channel, `@${tags.username}, you have: ${achievementPoints} achievement points!`);
+			})
+			.catch((error) => {
+				console.log(error);
+			    client.say(channel, `@${tags.username}, I couldn't find that charater, please ensure that you are giving realm-character. Character should include all special characters.`);
 			});
 		}
 
@@ -111,25 +116,3 @@ function getAuthBody(){
 	formBody = formBody.join("&");
 	return formBody;
 }
-
-/*function GetAchievementInfoCall(playerargs,authToken){
-	
-	var getURL = 'https://us.api.blizzard.com/profile/wow/character/'+playerInfo[0]+'/'+playerInfo[1]+'/achievements';
-
-	axios.get(getURL,{params:{namespace : 'profile-us',
-		locale : 'en_US',
-		access_token : authToken}})
-	.then(function (response){
-		console.log(response);
-		return(response['data']['total_points'])
-	})
-
-
-}*/
-
-//https://us.api.blizzard.com/profile/wow/character/thrall/xtrimity/achievements?namespace=profile-us&locale=en_US&access_token=US30v7CkxCyBGFgi5H9K71QgZeQreTQVu4
-
-
-
-
-
