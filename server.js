@@ -46,7 +46,7 @@ client.on('message', (channel, tags, message, self) => {
 			
 			if(BlizzardAuthToken == undefined){								
 				//wait for a response from the blizzard auth API
-				Promise.resolve(GetAuthToken())
+				Promise.resolve(RequestAuthToken())
 				.then((response) => {
 				  if(response['status'] == 200){
 					  console.log('have a good response from blizzard auth endpoint')
@@ -102,8 +102,8 @@ client.on('message', (channel, tags, message, self) => {
 			client.say(globalChannel, `@${tags.username}, you said: "${args.join(' ')}"`);
 		}
 	}
-	catch{
-		console.log("outer command level error");
+	catch(err){
+		console.log("outer command level error - "+err);
 	}
 	
 });
@@ -140,5 +140,8 @@ function IsPlayerInCache(playerInfo,tags){
 	return false;
 }
 function RequestAuthToken(){
-
+	let formBody = getAuthBody();
+	return axios.post('https://us.battle.net/oauth/token',
+	formBody,
+	{headers: {'content-type':'application/x-www-form-urlencoded'}});
 }
