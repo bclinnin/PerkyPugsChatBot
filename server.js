@@ -7,8 +7,9 @@ var BlizzardAuthToken;
 var playerDictionary = {};
 let client;
 let debug = new Boolean(process.env.DEBUG_MODE);
+let isRaffleOpen = new Boolean(false);
 let globalChannel;
-let adminList = ['Doom1024'];//TODO: make this a config argument on the heroku container startup
+let adminDict = {'Doom1024':1};//TODO: make this a config argument on the heroku container startup. using dict for fast lookup
 let currentRaffleList = [];
 //~~~~ END Globals
 
@@ -35,70 +36,125 @@ client.on('message', (channel, tags, message, self) => {
 	
 		const args = message.slice(1).split(' ');
 		const command = args.shift().toLowerCase();
-		console.log(args)
-		if(command === 'blizz'){
-			//TODO need to do index checking
-			let playerInfo = args[0].toLowerCase().split("-");
-	
-			//TODO : This is returning the chat message twice right now
-			if(!IsPlayerInfoValid(playerInfo))return;
-			if(IsPlayerInCache(playerInfo,tags))return;
-						
-			//wait for a response from the blizzard auth API
-			Promise.resolve(RequestAuthToken())
-			//Now go get the achievement information
-			.then((AuthToken) => {return fetchPlayerAchievementPoints(AuthToken,playerInfo)})
-			//wait for a response from the blizzard achievement API
-			.then((profileResponse) =>{
-				addPlayerAchievementInfoToDictionary(playerInfo,profileResponse);
-				return(profileResponse['data']['total_points']);
-			})
-			.then((achievementPoints) =>{
-				client.say(globalChannel, `@${tags.username}, you have: ${achievementPoints} achievement points!`);
-			})
-			.catch((error) => {
-				console.log(error);
-				client.say(globalChannel, `@${tags.username}, I couldn't find that charater, please ensure that you are giving realm-character. Character should include all special characters.`);
-			});
-	
-		}
-		if(command === 'echo') {
-			client.say(globalChannel, `@${tags.username}, you said: "${args.join(' ')}"`);
-		}
-		if(command === 'setwinners'){
-			if (args.length != 1){
-				console.log('incorrect args sent to setwinners command');
-				//TODO: maybe make this whisper the person who issued the admin command instead of channel broadcasting
-				client.say(globalChannel, `@${tags.username}, please provide only two arguments to the setwinners command. ex: \"!setwinners 15\"`);
-				return;
-			}
-		}
+		if(debug)console.log(args);
 
-		if(command === 'enter'){
-			//we should have exactly 1 argument
-			if(args.length !=1){
-				console.log('only one name should be supplied to this command');
-				return;
-			}
-			//let playerInfo = args[0].toLowerCase().split("-");
-			if (currentRaffleList.includes(args[0])){
-				return;
-			}
-			console.log(args[0]);
-			currentRaffleList.push(args[0]);
-			
-		}
-		if(command === 'showraffle'){    
-			for(var index in currentRaffleList){
-				console.log('Entered player - '+currentRaffleList[index]);
-			}
+		//route the command to the appropriate handler
+		switch(command){
+			case 'blizz':
+				HandleBlizzCommand(args,tags);
+				break;
+			case 'echo':
+				client.say(globalChannel, `@${tags.username}, you said: "${args.join(' ')}"`);
+				break;
+			case 'setwinners':
+				HandleSetWinnersCommand(args,tags);
+				break;
+			case 'enter':
+				HandleEnterCommand(args,tags);
+				break;
+			/*case 'showraffle':
+				HandleShowRaffleCommand(args,tags);	
+				break;*/
+			case 'openraffle':
+				HandleOpenRaffleCommand(args,tags);
+				break;	
+			case 'closeraffle':
+				HandleCloseRaffleCommand(args,tags);
+				break;
+			case 'help':
+				//TODO: dump available commands based on users permission level and whisper it to them
+				break;		
+			default:
+				break;								
 		}
 	}
 	catch(err){
 		console.log("outer command level error - "+err);
+	}	
+});
+
+function HandleCloseRaffleCommand(args,tags){
+	//this is an admin command, user must be in the allowlist to execute this
+	if(!tags.username.toLowerCase in adminDict){
+		if(debug)console.log('user did not have permission to execute command');
+		return;
+	}
+	isRaffleOpen = false;
+	client.say(globalChannel, `The raffle is now closed`);
+}
+
+function HandleOpenRaffleCommand(args,tags){
+	//this is an admin command, user must be in the allowlist to execute this
+	if(!tags.username.toLowerCase in adminDict){
+		if(debug)console.log('user did not have permission to execute command');
+		return;
+	}
+	//clear out the current list of entrants such that they must re-enter for each raffle
+	currentRaffleList = [];
+	isRaffleOpen = true;
+	client.say(globalChannel, `The raffle is now open`);
+}
+
+
+function HandleShowRaffleCommand(args,tags){
+	for(var index in currentRaffleList){
+		console.log('Entered player - ' + currentRaffleList[index]);
+	}
+}
+
+function HandleEnterCommand(args,tags){
+	//raffle must be open to allow new players to enter
+	if(!isRaffleOpen)return;
+
+	//we should have exactly 1 argument
+	if(args.length !=1){
+		console.log('only one name should be supplied to this command');
+		return;
 	}
 	
-});
+	//players can only enter the raffle once
+	if (currentRaffleList.includes(args[0])){
+		return;
+	}
+
+	//add them to the list
+	console.log(args[0]);
+	currentRaffleList.push(args[0]);
+}
+
+function HandleSetWinnersCommand(args,tags){
+	if (args.length != 1){
+		console.log('incorrect args sent to setwinners command');
+		//TODO: maybe make this whisper the person who issued the admin command instead of channel broadcasting
+		client.say(globalChannel, `@${tags.username}, please provide only two arguments to the setwinners command. ex: \"!setwinners 15\"`);
+		return;
+	}
+}
+
+function HandleBlizzCommand(args,tags){
+	//TODO need to do index checking
+	let playerInfo = args[0].toLowerCase().split("-");
+	
+	if(!IsPlayerInfoValid(playerInfo))return;
+	if(IsPlayerInCache(playerInfo,tags))return;
+				
+	//wait for a response from the blizzard auth API
+	Promise.resolve(RequestAuthToken())
+	//Now go get the achievement information
+	.then((AuthToken) => {return fetchPlayerAchievementPoints(AuthToken,playerInfo)})
+	//wait for a response from the blizzard achievement API
+	.then((profileResponse) =>{
+		addPlayerAchievementInfoToDictionary(playerInfo,profileResponse);
+		return(profileResponse['data']['total_points']);
+	})
+	.then((achievementPoints) =>{
+		client.say(globalChannel, `@${tags.username}, you have: ${achievementPoints} achievement points!`);
+	})
+	.catch((error) => {
+		if(debug)console.log(error);
+		client.say(globalChannel, `@${tags.username}, I couldn't find that charater, please ensure that you are giving realm-character. Character should include all special characters.`);
+	});
+}
 
 function getAuthBody(){
 	var details = {
@@ -133,6 +189,7 @@ function IsPlayerInCache(playerInfo,tags){
 }
 function RequestAuthToken(){
 	//if we already have a token, just return the auth string
+	//TODO: handle auth token expiration, track token receive time so that we reauth when expired (1day token life)
 	if(BlizzardAuthToken != undefined) return BlizzardAuthToken;
 	
 	let formBody = getAuthBody();	
@@ -143,19 +200,17 @@ function RequestAuthToken(){
 }
 function HandleAuthResponse(response){
 	if(response['status'] == 200){
-		console.log('have a good response from blizzard auth endpoint')
+		if(debug)console.log('have a good response from blizzard auth endpoint')
 		BlizzardAuthToken =  response['data']['access_token']
 		return response['data']['access_token']
 	}
 	else{
-		console.log("Failed to get an auth token from blizzard, maybe add a retry here at some point.")
+		if(debug)console.log("Failed to get an auth token from blizzard, maybe add a retry here at some point.")
 		return;
 	}
 }
 
 function fetchPlayerAchievementPoints(AuthToken,playerInfo){
-	console.log("current auth token "+AuthToken);
-	console.log("current logged player "+playerInfo);
 	var getURL = 'https://us.api.blizzard.com/profile/wow/character/'+playerInfo[0]+'/'+playerInfo[1]+'/achievements';
 	return axios.get(getURL,{params:{namespace : 'profile-us',
 		locale : 'en_US',
