@@ -42,65 +42,30 @@ client.on('message', (channel, tags, message, self) => {
 	
 			//TODO : This is returning the chat message twice right now
 			if(!IsPlayerInfoValid(playerInfo))return;
-			if(IsPlayerInCache(playerInfo,tags))return;			
-			
-			if(BlizzardAuthToken == undefined){								
-				//wait for a response from the blizzard auth API
-				Promise.resolve(RequestAuthToken())
-				.then((response) => {
-				  if(response['status'] == 200){
-					  console.log('have a good response from blizzard auth endpoint')
-					  BlizzardAuthToken =  response['data']['access_token']
-					  return response['data']['access_token']
-				  }
-				  else{
-					  console.log("Failed to get an auth token from blizzard, maybe add a retry here at some point.")
-					  return;
-				  }
-				})
-				//Now go get the achievement information
-				.then((AuthToken) =>{
-					var getURL = 'https://us.api.blizzard.com/profile/wow/character/'+playerInfo[0]+'/'+playerInfo[1]+'/achievements';
-					return axios.get(getURL,{params:{namespace : 'profile-us',
-						locale : 'en_US',
-						access_token : AuthToken}})
-				})						
-				//wait for a response from the blizzard achievement API				
-				.then((response) =>{
-						playerDictionary[playerInfo[0]+playerInfo[1]] = response['data']['total_points'];
-						return(response['data']['total_points'])
-				})
-				.then((achievementPoints) =>{
-					client.say(globalChannel, `@${tags.username}, you have: ${achievementPoints} achievement points!`);
-				})
-				.catch((error) => {
-					console.log(error);
-					client.say(globalChannel, `@${tags.username}, I couldn't find that charater, please ensure that you are giving realm-character. Character should include all special characters.`);
-				});
-			}else{
-				var getURL = 'https://us.api.blizzard.com/profile/wow/character/'+playerInfo[0]+'/'+playerInfo[1]+'/achievements';
-				axios.get(getURL,{params:{namespace : 'profile-us',
-						locale : 'en_US',
-						access_token : BlizzardAuthToken}
-				})				
-				//wait for a response from the blizzard achievement API				
-				.then((response) =>{
-						playerDictionary[playerInfo[0]+playerInfo[1]] = response['data']['total_points'];
-						return(response['data']['total_points'])
-				})
-				.then((achievementPoints) =>{
-					client.say(globalChannel, `@${tags.username}, you have: ${achievementPoints} achievement points!`);
-				})
-				.catch((error) => {
-					console.log(error);
-					client.say(globalChannel, `@${tags.username}, I couldn't find that charater, please ensure that you are giving realm-character. Character should include all special characters.`);
-				});
-			}
+			if(IsPlayerInCache(playerInfo,tags))return;
+						
+			//wait for a response from the blizzard auth API
+			Promise.resolve(RequestAuthToken())
+			//Now go get the achievement information
+			.then((AuthToken) => {return fetchPlayerAchievementPoints(AuthToken,playerInfo)})						
+			//wait for a response from the blizzard achievement API
+			.then((profileResponse) =>{
+				addPlayerAchievementInfoToDictionary(playerInfo,profileResponse);
+				return(profileResponse['data']['total_points'])
+			})
+			.then((achievementPoints) =>{
+				client.say(globalChannel, `@${tags.username}, you have: ${achievementPoints} achievement points!`);
+			})
+			.catch((error) => {
+				console.log(error);
+				client.say(globalChannel, `@${tags.username}, I couldn't find that charater, please ensure that you are giving realm-character. Character should include all special characters.`);
+			});
 	
 		}
 		if(command === 'echo') {
 			client.say(globalChannel, `@${tags.username}, you said: "${args.join(' ')}"`);
 		}
+
 	}
 	catch(err){
 		console.log("outer command level error - "+err);
@@ -140,8 +105,38 @@ function IsPlayerInCache(playerInfo,tags){
 	return false;
 }
 function RequestAuthToken(){
-	let formBody = getAuthBody();
-	return axios.post('https://us.battle.net/oauth/token',
+	//if we already have a token, just return the auth string
+	if(BlizzardAuthToken != undefined) return BlizzardAuthToken;
+	
+	let formBody = getAuthBody();	
+	return Promise.resolve(axios.post('https://us.battle.net/oauth/token',
 	formBody,
-	{headers: {'content-type':'application/x-www-form-urlencoded'}});
+	{headers: {'content-type':'application/x-www-form-urlencoded'}}))
+	.then((response) => {return HandleAuthResponse(response)});
+}
+function HandleAuthResponse(response){
+	if(response['status'] == 200){
+		console.log('have a good response from blizzard auth endpoint')
+		BlizzardAuthToken =  response['data']['access_token']
+		return response['data']['access_token']
+	}
+	else{
+		console.log("Failed to get an auth token from blizzard, maybe add a retry here at some point.")
+		return;
+	}
+}
+
+function fetchPlayerAchievementPoints(AuthToken,playerInfo){
+	console.log("current auth token "+AuthToken);
+	console.log("current logged player "+playerInfo);
+	var getURL = 'https://us.api.blizzard.com/profile/wow/character/'+playerInfo[0]+'/'+playerInfo[1]+'/achievements';
+	return axios.get(getURL,{params:{namespace : 'profile-us',
+		locale : 'en_US',
+		access_token : AuthToken}})
+}
+
+function addPlayerAchievementInfoToDictionary(playerInfo,profileResponse){
+	//key into dictionary on combination of player realm and name
+	playerDictionary[playerInfo[0]+playerInfo[1]] = profileResponse['data']['total_points'];
+	return(profileResponse['data']['total_points'])
 }
