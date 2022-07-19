@@ -8,6 +8,8 @@ var playerDictionary = {};
 let client;
 let debug = new Boolean(process.env.DEBUG_MODE);
 let globalChannel;
+let adminList = ['Doom1024'];//TODO: make this a config argument on the heroku container startup
+let currentRaffleList = [];
 //~~~~ END Globals
 
 //Client Connection Startup
@@ -24,8 +26,6 @@ if( !client){
 });
 }
 client.connect();
-
-
 
 client.on('message', (channel, tags, message, self) => {
 	try{
@@ -47,11 +47,11 @@ client.on('message', (channel, tags, message, self) => {
 			//wait for a response from the blizzard auth API
 			Promise.resolve(RequestAuthToken())
 			//Now go get the achievement information
-			.then((AuthToken) => {return fetchPlayerAchievementPoints(AuthToken,playerInfo)})						
+			.then((AuthToken) => {return fetchPlayerAchievementPoints(AuthToken,playerInfo)})
 			//wait for a response from the blizzard achievement API
 			.then((profileResponse) =>{
 				addPlayerAchievementInfoToDictionary(playerInfo,profileResponse);
-				return(profileResponse['data']['total_points'])
+				return(profileResponse['data']['total_points']);
 			})
 			.then((achievementPoints) =>{
 				client.say(globalChannel, `@${tags.username}, you have: ${achievementPoints} achievement points!`);
@@ -65,7 +65,34 @@ client.on('message', (channel, tags, message, self) => {
 		if(command === 'echo') {
 			client.say(globalChannel, `@${tags.username}, you said: "${args.join(' ')}"`);
 		}
+		if(command === 'setwinners'){
+			if (args.length != 1){
+				console.log('incorrect args sent to setwinners command');
+				//TODO: maybe make this whisper the person who issued the admin command instead of channel broadcasting
+				client.say(globalChannel, `@${tags.username}, please provide only two arguments to the setwinners command. ex: \"!setwinners 15\"`);
+				return;
+			}
+		}
 
+		if(command === 'enter'){
+			//we should have exactly 1 argument
+			if(args.length !=1){
+				console.log('only one name should be supplied to this command');
+				return;
+			}
+			//let playerInfo = args[0].toLowerCase().split("-");
+			if (currentRaffleList.includes(args[0])){
+				return;
+			}
+			console.log(args[0]);
+			currentRaffleList.push(args[0]);
+			
+		}
+		if(command === 'showraffle'){    
+			for(var index in currentRaffleList){
+				console.log('Entered player - '+currentRaffleList[index]);
+			}
+		}
 	}
 	catch(err){
 		console.log("outer command level error - "+err);
