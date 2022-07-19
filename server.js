@@ -3,19 +3,20 @@ const axios = require('axios');
 require('dotenv').config();
 
 //~~~~ Globals
-var BlizzardAuthToken;
+var global_BlizzardAuthToken;
 var playerDictionary = {};
-let client;
+let global_client;
 let debug = new Boolean(process.env.DEBUG_MODE);
-let isRaffleOpen = new Boolean(false);
+let isRaffleOpen = false;
+let global_desiredWinnerCount = 10;
 let globalChannel;
 let adminDict = {'Doom1024':1};//TODO: make this a config argument on the heroku container startup. using dict for fast lookup
 let currentRaffleList = [];
 //~~~~ END Globals
 
-//Client Connection Startup
-if( !client){
-	client = new tmi.Client({
+//client Connection Startup
+if( !global_client){
+	global_client = new tmi.Client({
 	connection:{
 		reconnect:true
 	},
@@ -26,9 +27,9 @@ if( !client){
 	channels: [ process.env.TWITCH_CHANNEL_NAME ]
 });
 }
-client.connect();
+global_client.connect();
 
-client.on('message', (channel, tags, message, self) => {
+global_client.on('message', (channel, tags, message, self) => {
 	try{
 		if(self || !message.startsWith('!')) return;
 		//map channel to global scope for simplicity
@@ -44,7 +45,7 @@ client.on('message', (channel, tags, message, self) => {
 				HandleBlizzCommand(args,tags);
 				break;
 			case 'echo':
-				client.say(globalChannel, `@${tags.username}, you said: "${args.join(' ')}"`);
+				global_client.say(globalChannel, `@${tags.username}, you said: "${args.join(' ')}"`);
 				break;
 			case 'setwinners':
 				HandleSetWinnersCommand(args,tags);
@@ -62,7 +63,7 @@ client.on('message', (channel, tags, message, self) => {
 				HandleCloseRaffleCommand(args,tags);
 				break;
 			case 'help':
-				//TODO: dump available commands based on users permission level and whisper it to them
+				HandleHelpCommand(args,tags);
 				break;		
 			default:
 				break;								
@@ -73,14 +74,58 @@ client.on('message', (channel, tags, message, self) => {
 	}	
 });
 
+function HandleHelpCommand(args,tags){
+	global_client.say(globalChannel, `The following commands are accepted.  ||||||  
+	!blizz 'realm'-'character'  ||||||  
+	!echo 'test string to return'  ||||||  
+	!setwinners 'number of winners'  ||||||  
+	!enter 'realm'-'character'  ||||||  
+	!openraffle  ||||||  
+	!closeraffle  ||||||  
+	!help`);
+}
+
 function HandleCloseRaffleCommand(args,tags){
 	//this is an admin command, user must be in the allowlist to execute this
 	if(!tags.username.toLowerCase in adminDict){
 		if(debug)console.log('user did not have permission to execute command');
 		return;
 	}
+
+	//check if raffle is already closed
+	if(!isRaffleOpen){
+		global_client.say(globalChannel, `The raffle is already closed`);
+		return;
+	}
 	isRaffleOpen = false;
-	client.say(globalChannel, `The raffle is now closed`);
+	global_client.say(globalChannel, `The raffle is now closed`);
+	CalculateWinners(args,tags);
+}
+
+function CalculateWinners(args,tags){
+	let currentWinnerCount = 0;
+	//TODO: this looping doesn't work quite right.  The entire thing needs to be an async promise chain, not just the winner eligibility logic
+	while(currentRaffleList.length > 0 && currentWinnerCount < global_desiredWinnerCount){
+		var selectedWinner = SelectWinnerFromList();
+		Promise.resolve(RequestAuthToken())
+		.then((AuthToken)=>{return FetchPlayerMounts(AuthToken,selectedWinner)})
+		.then((playerMountCollection)=>{return FindMountInCollection(playerMountCollection)})
+		.then((doesPlayerHaveMount) => {return DeterminePlayerEligibility(selectedWinner,doesPlayerHaveMount)});
+	
+		currentWinnerCount++;
+	}
+}
+
+function SelectWinnerFromList(){
+
+	//randomly select an element from our entered players list
+	const indexOfWinner = Math.floor(Math.random()*currentRaffleList.length);
+	var winner = currentRaffleList[indexOfWinner];
+	console.log(winner)
+	//remove this player from the list so they cannot be selected again
+	currentRaffleList.splice(indexOfWinner,1);
+
+	return winner;	
 }
 
 function HandleOpenRaffleCommand(args,tags){
@@ -89,12 +134,17 @@ function HandleOpenRaffleCommand(args,tags){
 		if(debug)console.log('user did not have permission to execute command');
 		return;
 	}
+
+	//check if raffle is already open
+	if(isRaffleOpen){
+		global_client.say(globalChannel, `The raffle is already open`);
+		return;
+	}
 	//clear out the current list of entrants such that they must re-enter for each raffle
 	currentRaffleList = [];
 	isRaffleOpen = true;
-	client.say(globalChannel, `The raffle is now open`);
+	global_client.say(globalChannel, `The raffle is now open`);
 }
-
 
 function HandleShowRaffleCommand(args,tags){
 	for(var index in currentRaffleList){
@@ -126,9 +176,11 @@ function HandleSetWinnersCommand(args,tags){
 	if (args.length != 1){
 		console.log('incorrect args sent to setwinners command');
 		//TODO: maybe make this whisper the person who issued the admin command instead of channel broadcasting
-		client.say(globalChannel, `@${tags.username}, please provide only two arguments to the setwinners command. ex: \"!setwinners 15\"`);
+		global_client.say(globalChannel, `@${tags.username}, please provide only two arguments to the setwinners command. ex: \"!setwinners 15\"`);
 		return;
 	}
+	global_desiredWinnerCount = ParseInt(args[0]);
+	//TODO:announce to the channel the new winner count
 }
 
 function HandleBlizzCommand(args,tags){
@@ -148,11 +200,11 @@ function HandleBlizzCommand(args,tags){
 		return(profileResponse['data']['total_points']);
 	})
 	.then((achievementPoints) =>{
-		client.say(globalChannel, `@${tags.username}, you have: ${achievementPoints} achievement points!`);
+		global_client.say(globalChannel, `@${tags.username}, you have: ${achievementPoints} achievement points!`);
 	})
 	.catch((error) => {
 		if(debug)console.log(error);
-		client.say(globalChannel, `@${tags.username}, I couldn't find that charater, please ensure that you are giving realm-character. Character should include all special characters.`);
+		global_client.say(globalChannel, `@${tags.username}, I couldn't find that charater, please ensure that you are giving realm-character. Character should include all special characters.`);
 	});
 }
 
@@ -182,7 +234,7 @@ function IsPlayerInfoValid(playerInfo){
 function IsPlayerInCache(playerInfo,tags){	
 	if( playerInfo[0]+playerInfo[1] in playerDictionary){
 		if(debug)console.log("retrieved from cache");
-		client.say(globalChannel, `@${tags.username}, you have: ${playerDictionary[playerInfo[0]+playerInfo[1]]} achievement points!`);
+		global_client.say(globalChannel, `@${tags.username}, you have: ${playerDictionary[playerInfo[0]+playerInfo[1]]} achievement points!`);
 		return true;
 	}
 	return false;
@@ -190,7 +242,7 @@ function IsPlayerInCache(playerInfo,tags){
 function RequestAuthToken(){
 	//if we already have a token, just return the auth string
 	//TODO: handle auth token expiration, track token receive time so that we reauth when expired (1day token life)
-	if(BlizzardAuthToken != undefined) return BlizzardAuthToken;
+	if(global_BlizzardAuthToken != undefined) return global_BlizzardAuthToken;
 	
 	let formBody = getAuthBody();	
 	return Promise.resolve(axios.post('https://us.battle.net/oauth/token',
@@ -201,7 +253,7 @@ function RequestAuthToken(){
 function HandleAuthResponse(response){
 	if(response['status'] == 200){
 		if(debug)console.log('have a good response from blizzard auth endpoint')
-		BlizzardAuthToken =  response['data']['access_token']
+		global_BlizzardAuthToken =  response['data']['access_token']
 		return response['data']['access_token']
 	}
 	else{
@@ -215,6 +267,33 @@ function fetchPlayerAchievementPoints(AuthToken,playerInfo){
 	return axios.get(getURL,{params:{namespace : 'profile-us',
 		locale : 'en_US',
 		access_token : AuthToken}})
+}
+
+function FetchPlayerMounts(AuthToken,playerInfo){
+	//playerinfo comes in the form realm-character here right now
+	playerInfo = playerInfo.toLowerCase().split("-");
+
+	var getURL = 'https://us.api.blizzard.com/profile/wow/character/'+playerInfo[0]+'/'+playerInfo[1]+'/collections/mounts';
+	return axios.get(getURL,{params:{namespace : 'profile-us',
+		locale : 'en_US',
+		access_token : AuthToken}})	
+}
+
+function FindMountInCollection(playerMountCollection){
+	console.log(playerMountCollection);
+	for(var mount of playerMountCollection['data']['mounts']){
+		if(mount['mount']['id']==process.env.AOTC_MOUNT_ID)return true;
+	}
+	return false;
+}
+
+function DeterminePlayerEligibility(selectedWinner,doesPlayerHaveMount){
+	if(doesPlayerHaveMount){
+		global_client.say(globalChannel, `@${selectedWinner} already has the mount and is NOT eligible for a carry!`);
+	}
+	else{
+		global_client.say(globalChannel, `@${selectedWinner} has won a carry!`);
+	}
 }
 
 function addPlayerAchievementInfoToDictionary(playerInfo,profileResponse){
