@@ -124,6 +124,10 @@ function HandleGetWinnersCommand(args,tags){
 	.then(()=>{
 		if(!ShouldContinueDrawingWinners())return;
 		return HandleGetWinnersCommand(args,tags);
+	})
+	.catch((error) => {
+		if(debug)console.log(error);
+		global_client.say(globalChannel, `An error was encountered while attempting to determine the winners.`);
 	});
 }
 
