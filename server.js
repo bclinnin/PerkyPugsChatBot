@@ -87,10 +87,10 @@ global_client.on('message', (channel, tags, message, self) => {
 
 function HandleHelpCommand(args,tags){
 	global_client.say(globalChannel, `The following commands are accepted.  ||||||  
-	!blizz 'realm'-'character'  ||||||  
+	!blizz 'realm'.'character'  ||||||  
 	!echo 'test string to return'  ||||||  
 	!setwinners 'number of winners'  ||||||  
-	!enter 'realm'-'character'  ||||||  
+	!enter 'realm'.'character'  ||||||  
 	!openraffle  ||||||  
 	!closeraffle  ||||||  
 	!help`);
@@ -112,7 +112,7 @@ function HandleCloseRaffleCommand(args,tags){
 // - the currentRaffleList array has had all items exhausted
 // - the number of desired winners have been randomly selected AND have passed validations
 function HandleGetWinnersCommand(args,tags){
-
+	//TODO promise chain should have exception handling
 	var trackedwinner;
 	Promise.resolve(RequestAuthToken())
 	.then(()=>{return SelectWinnerFromList()})
@@ -197,15 +197,27 @@ function HandleEnterCommand(args,tags){
 		console.log('only one name should be supplied to this command');
 		return;
 	}
-	
+
 	//players can only enter the raffle once
 	if (currentRaffleList.includes(args[0])){
 		return;
 	}
 
+	//check for formatting of the player provided name
+	if(!IsCharacterNameValid(args[0],tags))return;
+
 	//add them to the list
 	console.log(args[0]);
 	currentRaffleList.push(args[0]);
+}
+
+function IsCharacterNameValid(characterProvidedName,tags){
+	//check to see if the name splits out as expected into two arguments, which should be realm and character 
+	if(characterProvidedName.toLowerCase().split(".").length !=2){
+		global_client.say(globalChannel, `@${tags.username}, please check that your username is typed correctly.`);
+		return false;
+	}
+	return true;
 }
 
 function HandleSetWinnersCommand(args,tags){
@@ -216,12 +228,12 @@ function HandleSetWinnersCommand(args,tags){
 		return;
 	}
 	global_desiredWinnerCount = ParseInt(args[0]);
-	//TODO:announce to the channel the new winner count
+	global_client.say(globalChannel, `${global_desiredWinnerCount} players will be able to win in the next raffle!`);
 }
 
 function HandleBlizzCommand(args,tags){
 	//TODO need to do index checking
-	let playerInfo = args[0].toLowerCase().split("-");
+	let playerInfo = args[0].toLowerCase().split(".");
 	
 	if(!IsPlayerInfoValid(playerInfo))return;
 	if(IsPlayerInCache(playerInfo,tags))return;
@@ -280,6 +292,7 @@ function RequestAuthToken(){
 	//TODO: handle auth token expiration, track token receive time so that we reauth when expired (1day token life)
 	if(global_BlizzardAuthToken != undefined) return global_BlizzardAuthToken;
 	
+	//TODO promise chain should have exception handling
 	let formBody = getAuthBody();	
 	return Promise.resolve(axios.post('https://us.battle.net/oauth/token',
 	formBody,
@@ -308,7 +321,7 @@ function fetchPlayerAchievementPoints(AuthToken,playerInfo){
 function FetchPlayerMounts(playerInfo){
 	if(playerInfo == null)return;
 	//playerinfo comes in the form realm-character here right now
-	playerInfo = playerInfo.toLowerCase().split("-");
+	playerInfo = playerInfo.toLowerCase().split(".");
 
 	var getURL = 'https://us.api.blizzard.com/profile/wow/character/'+playerInfo[0]+'/'+playerInfo[1]+'/collections/mounts';
 	return axios.get(getURL,{params:{namespace : 'profile-us',
