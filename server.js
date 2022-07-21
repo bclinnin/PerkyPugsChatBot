@@ -11,7 +11,6 @@ let isRaffleOpen = false;
 let global_currentWinnerCount = 0;
 let global_desiredWinnerCount = 10;
 let globalChannel;
-let adminDict = {'Doom1024':1};//TODO: make this a config argument on the heroku container startup. using dict for fast lookup
 let currentRaffleList = [];
 //~~~~ END Globals
 
@@ -49,6 +48,8 @@ global_client.on('message', (channel, tags, message, self) => {
 				global_client.say(globalChannel, `@${tags.username}, you said: "${args.join(' ')}"`);
 				break;
 			case 'setwinners':
+				//user must have admin permissions to execute this command
+				if(!DoesUserHaveAdminPermissions(tags))return;
 				HandleSetWinnersCommand(args,tags);
 				break;
 			case 'enter':
@@ -58,12 +59,18 @@ global_client.on('message', (channel, tags, message, self) => {
 				HandleShowRaffleCommand(args,tags);	
 				break;*/
 			case 'openraffle':
+				//user must have admin permissions to execute this command
+				if(!DoesUserHaveAdminPermissions(tags))return;
 				HandleOpenRaffleCommand(args,tags);
 				break;	
 			case 'closeraffle':
+				//user must have admin permissions to execute this command
+				if(!DoesUserHaveAdminPermissions(tags))return;
 				HandleCloseRaffleCommand(args,tags);
 				break;
 			case 'getwinners':
+				//user must have admin permissions to execute this command
+				if(!DoesUserHaveAdminPermissions(tags))return;
 				HandleGetWinnersCommand(args,tags);	
 				break;
 			case 'help':
@@ -90,12 +97,6 @@ function HandleHelpCommand(args,tags){
 }
 
 function HandleCloseRaffleCommand(args,tags){
-	//this is an admin command, user must be in the allowlist to execute this
-	if(!tags.username.toLowerCase in adminDict){
-		if(debug)console.log('user did not have permission to execute command');
-		return;
-	}
-
 	//check if raffle is already closed
 	if(!isRaffleOpen){
 		global_client.say(globalChannel, `The raffle is already closed`);
@@ -111,6 +112,7 @@ function HandleCloseRaffleCommand(args,tags){
 // - the currentRaffleList array has had all items exhausted
 // - the number of desired winners have been randomly selected AND have passed validations
 function HandleGetWinnersCommand(args,tags){
+
 	var trackedwinner;
 	Promise.resolve(RequestAuthToken())
 	.then(()=>{return SelectWinnerFromList()})
@@ -165,16 +167,10 @@ function SelectWinnerFromList(){
 	//remove this player from the list so they cannot be selected again
 	currentRaffleList.splice(indexOfWinner,1);
 
-	return winner;	
+	return winner;
 }
 
 function HandleOpenRaffleCommand(args,tags){
-	//this is an admin command, user must be in the allowlist to execute this
-	if(!tags.username.toLowerCase in adminDict){
-		if(debug)console.log('user did not have permission to execute command');
-		return;
-	}
-
 	//check if raffle is already open
 	if(isRaffleOpen){
 		global_client.say(globalChannel, `The raffle is already open`);
@@ -344,4 +340,20 @@ function addPlayerAchievementInfoToDictionary(playerInfo,profileResponse){
 	//key into dictionary on combination of player realm and name
 	playerDictionary[playerInfo[0]+playerInfo[1]] = profileResponse['data']['total_points'];
 	return(profileResponse['data']['total_points'])
+}
+
+function DoesUserHaveAdminPermissions(tags){
+	if(tags == null)return false;
+	if(tags.badges == null)return false;
+	if('broadcaster' in tags.badges){
+		//This is the streamer, grant them access
+		console.log("this is the broadcaster");
+		return true;
+	}
+	if(tags.mod === true){
+		//This is a moderator, grant them access
+		console.log("mod detected");
+		return true;
+	}
+	return false;
 }
