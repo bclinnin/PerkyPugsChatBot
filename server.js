@@ -8,6 +8,7 @@ var playerDictionary = {};
 let global_client;
 let debug = new Boolean(process.env.DEBUG_MODE);
 let isRaffleOpen = false;
+let global_currentWinnerCount = 0;
 let global_desiredWinnerCount = 10;
 let globalChannel;
 let adminDict = {'Doom1024':1};//TODO: make this a config argument on the heroku container startup. using dict for fast lookup
@@ -62,6 +63,9 @@ global_client.on('message', (channel, tags, message, self) => {
 			case 'closeraffle':
 				HandleCloseRaffleCommand(args,tags);
 				break;
+			case 'getwinners':
+				HandleGetWinnersCommand(args,tags);	
+				break;
 			case 'help':
 				HandleHelpCommand(args,tags);
 				break;		
@@ -98,8 +102,40 @@ function HandleCloseRaffleCommand(args,tags){
 		return;
 	}
 	isRaffleOpen = false;
+	global_currentWinnerCount = 0;
 	global_client.say(globalChannel, `The raffle is now closed`);
-	CalculateWinners(args,tags);
+	//CalculateWinners(args,tags);
+}
+
+//This will create a recursive chain of promises that will terminate when ANY of the following base cases are met
+// - the currentRaffleList array has had all items exhausted
+// - the number of desired winners have been randomly selected AND have passed validations
+function HandleGetWinnersCommand(args,tags){
+	var trackedwinner;
+	Promise.resolve(RequestAuthToken())
+	.then(()=>{return SelectWinnerFromList()})
+	.then((winner)=>{
+		trackedwinner = winner;
+		return FetchPlayerMounts(winner)})
+	.then((playerMountCollection)=>{return FindMountInCollection(playerMountCollection)})
+	.then((doesPlayerHaveMount) => {return DeterminePlayerEligibility(trackedwinner,doesPlayerHaveMount)})
+	.then(()=>{
+		if(!ShouldContinueDrawingWinners())return;
+		return HandleGetWinnersCommand(args,tags);
+	});
+}
+
+function ShouldContinueDrawingWinners(){
+	//handle the case of our list being exhausted
+	if(currentRaffleList.length == 0){
+		global_client.say(globalChannel, `There are no more potential winners to be chosen`);
+		return false;
+	}
+	if(global_currentWinnerCount >= global_desiredWinnerCount){
+		global_client.say(globalChannel, `The max number of winners for this run has been reached!`);
+		return false;
+	}
+	return true;
 }
 
 function CalculateWinners(args,tags){
@@ -108,7 +144,7 @@ function CalculateWinners(args,tags){
 	while(currentRaffleList.length > 0 && currentWinnerCount < global_desiredWinnerCount){
 		var selectedWinner = SelectWinnerFromList();
 		Promise.resolve(RequestAuthToken())
-		.then((AuthToken)=>{return FetchPlayerMounts(AuthToken,selectedWinner)})
+		.then(()=>{return FetchPlayerMounts(selectedWinner)})
 		.then((playerMountCollection)=>{return FindMountInCollection(playerMountCollection)})
 		.then((doesPlayerHaveMount) => {return DeterminePlayerEligibility(selectedWinner,doesPlayerHaveMount)});
 	
@@ -117,6 +153,10 @@ function CalculateWinners(args,tags){
 }
 
 function SelectWinnerFromList(){
+	//handle the case of our list being exhausted
+	if(currentRaffleList.length == 0){
+		global_client.say(globalChannel, `There are no more potential winners to be chosen`);
+	}
 
 	//randomly select an element from our entered players list
 	const indexOfWinner = Math.floor(Math.random()*currentRaffleList.length);
@@ -269,17 +309,19 @@ function fetchPlayerAchievementPoints(AuthToken,playerInfo){
 		access_token : AuthToken}})
 }
 
-function FetchPlayerMounts(AuthToken,playerInfo){
+function FetchPlayerMounts(playerInfo){
+	if(playerInfo == null)return;
 	//playerinfo comes in the form realm-character here right now
 	playerInfo = playerInfo.toLowerCase().split("-");
 
 	var getURL = 'https://us.api.blizzard.com/profile/wow/character/'+playerInfo[0]+'/'+playerInfo[1]+'/collections/mounts';
 	return axios.get(getURL,{params:{namespace : 'profile-us',
 		locale : 'en_US',
-		access_token : AuthToken}})	
+		access_token : global_BlizzardAuthToken}})	
 }
 
 function FindMountInCollection(playerMountCollection){
+	if(playerMountCollection == null)return;
 	console.log(playerMountCollection);
 	for(var mount of playerMountCollection['data']['mounts']){
 		if(mount['mount']['id']==process.env.AOTC_MOUNT_ID)return true;
@@ -288,11 +330,13 @@ function FindMountInCollection(playerMountCollection){
 }
 
 function DeterminePlayerEligibility(selectedWinner,doesPlayerHaveMount){
+	if(selectedWinner == null)return;
 	if(doesPlayerHaveMount){
 		global_client.say(globalChannel, `@${selectedWinner} already has the mount and is NOT eligible for a carry!`);
 	}
 	else{
 		global_client.say(globalChannel, `@${selectedWinner} has won a carry!`);
+		global_currentWinnerCount++;
 	}
 }
 
