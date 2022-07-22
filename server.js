@@ -112,6 +112,7 @@ function HandleCloseRaffleCommand(args,tags){
 // - the currentRaffleList array has had all items exhausted
 // - the number of desired winners have been randomly selected AND have passed validations
 function HandleGetWinnersCommand(args,tags){
+	if(isRaffleOpen)return;
 	//TODO promise chain should have exception handling
 	var trackedwinner;
 	Promise.resolve(RequestAuthToken())
