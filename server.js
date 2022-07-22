@@ -12,6 +12,8 @@ let global_currentWinnerCount = 0;
 let global_desiredWinnerCount = 10;
 let globalChannel;
 let currentRaffleList = [];
+let global_playerFactionDictionary = {};
+let global_playerToTwitchNameDictionary = {};
 //~~~~ END Globals
 
 //client Connection Startup
@@ -202,18 +204,28 @@ function HandleEnterCommand(args,tags){
 		console.log('only one name should be supplied to this command');
 		return;
 	}
+	var realmAndCharacterName = args[0].toLowerCase();
+	var realmAndCharacterSeparated = realmAndCharacterName.split(".");
+	var realm = realmAndCharacterSeparated[0];
+	var character = realmAndCharacterSeparated[1];
 
 	//players can only enter the raffle once
-	if (currentRaffleList.includes(args[0])){
+	if (currentRaffleList.includes(realmAndCharacterName)){
+		global_client.say(globalChannel, `@${tags.username}, you are already entered in the current raffle.`);
 		return;
 	}
 
 	//check for formatting of the player provided name
 	if(!IsCharacterNameValid(args[0],tags))return;
-
-	//add them to the list
-	console.log(args[0]);
-	currentRaffleList.push(args[0]);
+	
+	Promise.resolve(RequestAuthToken())
+	//Now go get the achievement information
+	.then(() => {return FetchPlayerSummary(realm,character)})
+	.then((characterSummary) => {return RegisterPlayerForRaffle(characterSummary,realmAndCharacterName,tags)})
+	.catch((error) => {
+		if(debug)console.log(error); //if we get 429'd (rate limit) this will still show as not being able to find character even though that's not quite true
+		global_client.say(globalChannel, `@${tags.username}, I couldn't find that charater, please ensure that you are giving realm(dot)character. Character name should include any alt codes for special characters.`);
+	});	
 }
 
 function IsCharacterNameValid(characterProvidedName,tags){
@@ -223,6 +235,27 @@ function IsCharacterNameValid(characterProvidedName,tags){
 		return false;
 	}
 	return true;
+}
+
+function RegisterPlayerForRaffle(characterSummary,realmAndCharacterName,tags){
+	console.log(characterSummary);
+	var playerFaction = characterSummary['data']['faction']['type'];
+
+	//we need to store a dictionary of player->faction
+	global_playerFactionDictionary[realmAndCharacterName] = playerFaction;
+
+	//store the player's twitch name in case they win
+	global_playerToTwitchNameDictionary[realmAndCharacterName] = tags.username;
+
+	currentRaffleList.push(realmAndCharacterName);
+}
+
+function FetchPlayerSummary(realm,character){
+	var getURL = 'https://us.api.blizzard.com/profile/wow/character/'+realm+'/'+character;
+	return axios.get(getURL,{params:{namespace : 'profile-us',
+		locale : 'en_US',
+		access_token : global_BlizzardAuthToken}})
+
 }
 
 function HandleSetWinnersCommand(args,tags){
@@ -346,10 +379,10 @@ function FindMountInCollection(playerMountCollection){
 function DeterminePlayerEligibility(selectedWinner,doesPlayerHaveMount){
 	if(selectedWinner == null)return;
 	if(doesPlayerHaveMount){
-		global_client.say(globalChannel, `@${selectedWinner} already has the mount and is NOT eligible for a carry!`);
+		global_client.say(globalChannel, `@${global_playerToTwitchNameDictionary[selectedWinner]} already has the mount and is NOT eligible for a carry!`);
 	}
 	else{
-		global_client.say(globalChannel, `@${selectedWinner} has won a carry!`);
+		global_client.say(globalChannel, `@${global_playerToTwitchNameDictionary[selectedWinner]} has won a carry with character {{${selectedWinner}}} on ${global_playerFactionDictionary[selectedWinner]} !`);
 		global_currentWinnerCount++;
 	}
 }
