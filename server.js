@@ -1,5 +1,6 @@
 const tmi = require('tmi.js');
 const axios = require('axios');
+const axiosRetry = require('axios-retry');
 require('dotenv').config();
 
 //~~~~ Globals
@@ -30,6 +31,11 @@ if( !global_client){
 });
 }
 global_client.connect();
+
+//Configure axios retry for potential throttling from blizzard
+axiosRetry(axios, { retries: 3 });
+axiosRetry(axios, { retryDelay: axiosRetry.exponentialDelay });
+axiosRetry(axios, {retryCondition: (error)=>{return error.response['status'] === 429}});
 
 global_client.on('message', (channel, tags, message, self) => {
 	try{

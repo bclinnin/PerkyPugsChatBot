@@ -18,6 +18,7 @@
   "homepage": "https://github.com/bclinnin/PerkyPugsChatBot#readme",
   "dependencies": {
     "axios": "^0.26.0",
+    "axios-retry": "^3.3.1",
     "dotenv": "^16.0.0",
     "request": "^2.88.2",
     "tmi.js": "^1.8.5"
