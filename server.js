@@ -13,6 +13,7 @@ let global_currentWinnerCount = 0;
 let global_desiredWinnerCount = 10;
 let globalChannel;
 let currentRaffleList = [];
+let currentRaffleTwitchName = [];
 let global_playerFactionDictionary = {};
 let global_playerToTwitchNameDictionary = {};
 //~~~~ END Globals
@@ -49,14 +50,14 @@ global_client.on('message', (channel, tags, message, self) => {
 
 		//route the command to the appropriate handler
 		switch(command){
-			case 'blizz':
+			/*case 'blizz':
 				HandleBlizzCommand(args,tags);
-				break;
+				break;*/
 			case 'echo':
-				global_client.say(globalChannel, `@${tags.username}, you said: "${args.join(' ')}"`);
+				if(!DoesUserHaveAdminPermissions(tags))return;
+				HandleEchoCommand(args,tags);
 				break;
 			case 'setwinners':
-				//user must have admin permissions to execute this command
 				if(!DoesUserHaveAdminPermissions(tags))return;
 				HandleSetWinnersCommand(args,tags);
 				break;
@@ -67,21 +68,19 @@ global_client.on('message', (channel, tags, message, self) => {
 				HandleShowRaffleCommand(args,tags);	
 				break;*/
 			case 'openraffle':
-				//user must have admin permissions to execute this command
 				if(!DoesUserHaveAdminPermissions(tags))return;
 				HandleOpenRaffleCommand(args,tags);
 				break;	
 			case 'closeraffle':
-				//user must have admin permissions to execute this command
 				if(!DoesUserHaveAdminPermissions(tags))return;
 				HandleCloseRaffleCommand(args,tags);
 				break;
 			case 'getwinners':
-				//user must have admin permissions to execute this command
 				if(!DoesUserHaveAdminPermissions(tags))return;
 				HandleGetWinnersCommand(args,tags);	
 				break;
 			case 'help':
+				if(!DoesUserHaveAdminPermissions(tags))return;
 				HandleHelpCommand(args,tags);
 				break;		
 			default:
@@ -95,13 +94,17 @@ global_client.on('message', (channel, tags, message, self) => {
 
 function HandleHelpCommand(args,tags){
 	global_client.say(globalChannel, `The following commands are accepted.  ||||||  
-	!blizz 'realm'.'character'  ||||||  
 	!echo 'test string to return'  ||||||  
 	!setwinners 'number of winners'  ||||||  
-	!enter 'realm'.'character'  ||||||  
+	!enter 'character'.'realm'  ||||||  
 	!openraffle  ||||||  
 	!closeraffle  ||||||  
+	!getwinners  ||||||  
 	!help`);
+}
+
+function HandleEchoCommand(args,tags){
+	global_client.say(globalChannel, `@${tags.username}, you said: "${args.join(' ')}"`);
 }
 
 function HandleCloseRaffleCommand(args,tags){
@@ -121,7 +124,7 @@ function HandleCloseRaffleCommand(args,tags){
 // - the number of desired winners have been randomly selected AND have passed validations
 function HandleGetWinnersCommand(args,tags){
 	if(isRaffleOpen)return;
-	//TODO promise chain should have exception handling
+
 	var trackedwinner;
 	Promise.resolve(RequestAuthToken())
 	.then(()=>{return SelectWinnerFromList()})
@@ -153,20 +156,6 @@ function ShouldContinueDrawingWinners(){
 	return true;
 }
 
-function CalculateWinners(args,tags){
-	let currentWinnerCount = 0;
-	//TODO: this looping doesn't work quite right.  The entire thing needs to be an async promise chain, not just the winner eligibility logic
-	while(currentRaffleList.length > 0 && currentWinnerCount < global_desiredWinnerCount){
-		var selectedWinner = SelectWinnerFromList();
-		Promise.resolve(RequestAuthToken())
-		.then(()=>{return FetchPlayerMounts(selectedWinner)})
-		.then((playerMountCollection)=>{return FindMountInCollection(playerMountCollection)})
-		.then((doesPlayerHaveMount) => {return DeterminePlayerEligibility(selectedWinner,doesPlayerHaveMount)});
-	
-		currentWinnerCount++;
-	}
-}
-
 function SelectWinnerFromList(){
 	//handle the case of our list being exhausted
 	if(currentRaffleList.length == 0){
@@ -191,6 +180,7 @@ function HandleOpenRaffleCommand(args,tags){
 	}
 	//clear out the current list of entrants such that they must re-enter for each raffle
 	currentRaffleList = [];
+	currentRaffleTwitchName = [];
 	isRaffleOpen = true;
 	global_client.say(globalChannel, `The raffle is now open`);
 }
@@ -210,28 +200,46 @@ function HandleEnterCommand(args,tags){
 		console.log('only one name should be supplied to this command');
 		return;
 	}
+
+	//check for formatting of the player provided name
+	if(!IsCharacterNameValid(args[0],tags))return;
+
 	var realmAndCharacterName = args[0].toLowerCase();
 	var realmAndCharacterSeparated = realmAndCharacterName.split(".");
-	var realm = realmAndCharacterSeparated[0];
-	var character = realmAndCharacterSeparated[1];
+	var realm = realmAndCharacterSeparated[1];
+	var character = realmAndCharacterSeparated[0];
 
 	//players can only enter the raffle once
 	if (currentRaffleList.includes(realmAndCharacterName)){
 		global_client.say(globalChannel, `@${tags.username}, you are already entered in the current raffle.`);
 		return;
 	}
-
-	//check for formatting of the player provided name
-	if(!IsCharacterNameValid(args[0],tags))return;
 	
+	if (!CanTwitchAccountEnterInRaffle(tags)){
+		global_client.say(globalChannel, `@${tags.username}, you may only enter one character in the raffle.`);
+		return;
+	}
+
 	Promise.resolve(RequestAuthToken())
-	//Now go get the achievement information
+	//Grab character summary and register them for raffle if they exist
 	.then(() => {return FetchPlayerSummary(realm,character)})
 	.then((characterSummary) => {return RegisterPlayerForRaffle(characterSummary,realmAndCharacterName,tags)})
 	.catch((error) => {
-		if(debug)console.log(error); //if we get 429'd (rate limit) this will still show as not being able to find character even though that's not quite true
-		global_client.say(globalChannel, `@${tags.username}, I couldn't find that charater, please ensure that you are giving realm(dot)character. Character name should include any alt codes for special characters.`);
+		if(debug)console.log(error); 
+		global_client.say(globalChannel, `@${tags.username}, I couldn't find that charater, please ensure that you are giving character(dot)realm. Character name should include any alt codes for special characters.`);
 	});	
+}
+
+function CanTwitchAccountEnterInRaffle(tags){
+	//admins can enter multiple characters from a single twitch user
+	//everyone else can only enter one character per twitch user
+	if(DoesUserHaveAdminPermissions(tags)){
+		return true;
+	}
+	if(!currentRaffleTwitchName.contains(tags.username)){
+		return true;
+	}
+	return false;
 }
 
 function IsCharacterNameValid(characterProvidedName,tags){
@@ -247,6 +255,14 @@ function RegisterPlayerForRaffle(characterSummary,realmAndCharacterName,tags){
 	console.log(characterSummary);
 	var playerFaction = characterSummary['data']['faction']['type'];
 
+	if(currentRaffleList.includes(realmAndCharacterName)){
+		console.log('race condition met of player entering multiple times quickly');
+		return;
+	}
+	if (!CanTwitchAccountEnterInRaffle(tags)){
+		return;
+	}
+
 	//we need to store a dictionary of player->faction
 	global_playerFactionDictionary[realmAndCharacterName] = playerFaction;
 
@@ -254,6 +270,7 @@ function RegisterPlayerForRaffle(characterSummary,realmAndCharacterName,tags){
 	global_playerToTwitchNameDictionary[realmAndCharacterName] = tags.username;
 
 	currentRaffleList.push(realmAndCharacterName);
+	currentRaffleTwitchName.push(tags.username);
 }
 
 function FetchPlayerSummary(realm,character){
@@ -364,10 +381,12 @@ function fetchPlayerAchievementPoints(AuthToken,playerInfo){
 
 function FetchPlayerMounts(playerInfo){
 	if(playerInfo == null)return;
-	//playerinfo comes in the form realm-character here right now
+	//playerinfo comes in the form character.realm here right now
 	playerInfo = playerInfo.toLowerCase().split(".");
 
-	var getURL = 'https://us.api.blizzard.com/profile/wow/character/'+playerInfo[0]+'/'+playerInfo[1]+'/collections/mounts';
+	//playerInfo[1] contains the realm
+	//playerInfo[0] contains the character name
+	var getURL = 'https://us.api.blizzard.com/profile/wow/character/'+playerInfo[1]+'/'+playerInfo[0]+'/collections/mounts';
 	return axios.get(getURL,{params:{namespace : 'profile-us',
 		locale : 'en_US',
 		access_token : global_BlizzardAuthToken}})	
