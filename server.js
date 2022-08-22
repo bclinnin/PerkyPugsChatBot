@@ -271,6 +271,7 @@ function RegisterPlayerForRaffle(characterSummary,realmAndCharacterName,tags){
 
 	currentRaffleList.push(realmAndCharacterName);
 	currentRaffleTwitchName.push(tags.username);
+	global_client.say(globalChannel, `@${tags.username}, you are entered.`);
 }
 
 function FetchPlayerSummary(realm,character){
