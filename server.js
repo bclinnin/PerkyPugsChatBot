@@ -288,7 +288,7 @@ function HandleSetWinnersCommand(args,tags){
 		global_client.say(globalChannel, `@${tags.username}, please provide only two arguments to the setwinners command. ex: \"!setwinners 15\"`);
 		return;
 	}
-	global_desiredWinnerCount = ParseInt(args[0]);
+	global_desiredWinnerCount = parseInt(args[0]);
 	global_client.say(globalChannel, `${global_desiredWinnerCount} players will be able to win in the next raffle!`);
 }
 
