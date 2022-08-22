@@ -236,7 +236,7 @@ function CanTwitchAccountEnterInRaffle(tags){
 	if(DoesUserHaveAdminPermissions(tags)){
 		return true;
 	}
-	if(!currentRaffleTwitchName.contains(tags.username)){
+	if(!currentRaffleTwitchName.includes(tags.username)){
 		return true;
 	}
 	return false;
