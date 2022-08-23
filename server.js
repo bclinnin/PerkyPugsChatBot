@@ -252,7 +252,6 @@ function IsCharacterNameValid(characterProvidedName,tags){
 }
 
 function RegisterPlayerForRaffle(characterSummary,realmAndCharacterName,tags){
-	console.log(characterSummary);
 	var playerFaction = characterSummary['data']['faction']['type'];
 
 	if(currentRaffleList.includes(realmAndCharacterName)){
@@ -395,7 +394,6 @@ function FetchPlayerMounts(playerInfo){
 
 function FindMountInCollection(playerMountCollection){
 	if(playerMountCollection == null)return;
-	console.log(playerMountCollection);
 	for(var mount of playerMountCollection['data']['mounts']){
 		if(mount['mount']['id']==process.env.AOTC_MOUNT_ID)return true;
 	}
