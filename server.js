@@ -44,7 +44,7 @@ global_client.on('message', (channel, tags, message, self) => {
 		//map channel to global scope for simplicity
 		globalChannel=channel;
 	
-		const args = message.slice(1).split(' ');
+		const args = message.slice(1).trim().split(/\s+/);
 		const command = args.shift().toLowerCase();
 		if(debug)console.log(args);
 
@@ -211,7 +211,7 @@ function HandleEnterCommand(args,tags){
 	var realmAndCharacterName = charAndRealm.join('_');
 	var realm = charAndRealm[1];
 	var character = charAndRealm[0];
-	//console.log(character + '+' +realm);
+	console.log(character + '+' +realm);
 	//players can only enter the raffle once
 	if (currentRaffleList.includes(realmAndCharacterName)){
 		global_client.say(globalChannel, `@${tags.username}, you are already entered in the current raffle.`);
