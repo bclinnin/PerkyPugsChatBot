@@ -50,9 +50,6 @@ global_client.on('message', (channel, tags, message, self) => {
 
 		//route the command to the appropriate handler
 		switch(command){
-			/*case 'blizz':
-				HandleBlizzCommand(args,tags);
-				break;*/
 			case 'echo':
 				if(!DoesUserHaveAdminPermissions(tags))return;
 				HandleEchoCommand(args,tags);
@@ -64,9 +61,6 @@ global_client.on('message', (channel, tags, message, self) => {
 			case 'enter':
 				HandleEnterCommand(args,tags);
 				break;
-			/*case 'showraffle':
-				HandleShowRaffleCommand(args,tags);	
-				break;*/
 			case 'openraffle':
 				if(!DoesUserHaveAdminPermissions(tags))return;
 				HandleOpenRaffleCommand(args,tags);
@@ -96,7 +90,7 @@ function HandleHelpCommand(args,tags){
 	global_client.say(globalChannel, `The following commands are accepted.  ||||||  
 	!echo 'test string to return'  ||||||  
 	!setwinners 'number of winners'  ||||||  
-	!enter 'character'.'realm'  ||||||  
+	!enter 'character'-'realm'  ||||||  
 	!openraffle  ||||||  
 	!closeraffle  ||||||  
 	!getwinners  ||||||  
@@ -116,7 +110,6 @@ function HandleCloseRaffleCommand(args,tags){
 	isRaffleOpen = false;
 	global_currentWinnerCount = 0;
 	global_client.say(globalChannel, `The raffle is now closed`);
-	//CalculateWinners(args,tags);
 }
 
 //This will create a recursive chain of promises that will terminate when ANY of the following base cases are met
@@ -185,30 +178,40 @@ function HandleOpenRaffleCommand(args,tags){
 	global_client.say(globalChannel, `The raffle is now open`);
 }
 
-function HandleShowRaffleCommand(args,tags){
-	for(var index in currentRaffleList){
-		console.log('Entered player - ' + currentRaffleList[index]);
+function ValidateAndParseCharacterInfo(args){
+	//I kind of hate this, but this is what currently allows players to enter the entire
+	//Realm name with whitespace and special characters included, but have it still work with the wowAPI
+	try{
+	//merge the array back together
+	var combined = args.join(" ");
+
+	//scrape the character name
+	var splitByHyphen = combined.split('-');
+	var characterName = splitByHyphen.shift().toLowerCase();
+
+	var remainingRealmInfo = splitByHyphen.join('-'); //ensures hyphens removed in the split get put back in
+	var realmNoWhitespace = remainingRealmInfo.replace(" ","-"); // get rid of realm whitespace for wow API
+	var realmNoWhiteSpaceNoSpecialChar = realmNoWhitespace.replaceAll('\'','').toLowerCase(); //lowercase it and get rid of apostrophes
+
+	return [characterName,realmNoWhiteSpaceNoSpecialChar];
+
 	}
+	catch(errror){
+		console.log(error);
+	}
+	
 }
 
 function HandleEnterCommand(args,tags){
 	//raffle must be open to allow new players to enter
 	if(!isRaffleOpen)return;
 
-	//we should have exactly 1 argument
-	if(args.length !=1){
-		console.log('only one name should be supplied to this command');
-		return;
-	}
-
-	//check for formatting of the player provided name
-	if(!IsCharacterNameValid(args[0],tags))return;
-
-	var realmAndCharacterName = args[0].toLowerCase();
-	var realmAndCharacterSeparated = realmAndCharacterName.split(".");
-	var realm = realmAndCharacterSeparated[1];
-	var character = realmAndCharacterSeparated[0];
-
+	var charAndRealm = ValidateAndParseCharacterInfo(args);
+	
+	var realmAndCharacterName = charAndRealm.join('_');
+	var realm = charAndRealm[1];
+	var character = charAndRealm[0];
+	//console.log(character + '+' +realm);
 	//players can only enter the raffle once
 	if (currentRaffleList.includes(realmAndCharacterName)){
 		global_client.say(globalChannel, `@${tags.username}, you are already entered in the current raffle.`);
@@ -226,7 +229,7 @@ function HandleEnterCommand(args,tags){
 	.then((characterSummary) => {return RegisterPlayerForRaffle(characterSummary,realmAndCharacterName,tags)})
 	.catch((error) => {
 		if(debug)console.log(error); 
-		global_client.say(globalChannel, `@${tags.username}, I couldn't find that charater, please ensure that you are giving character(dot)realm. Character name should include any alt codes for special characters.`);
+		global_client.say(globalChannel, `@${tags.username}, I couldn't find that charater, please ensure that you are giving character-realm. Character name should include any alt codes for special characters.`);
 	});	
 }
 
@@ -242,18 +245,13 @@ function CanTwitchAccountEnterInRaffle(tags){
 	return false;
 }
 
-function IsCharacterNameValid(characterProvidedName,tags){
-	//check to see if the name splits out as expected into two arguments, which should be realm and character 
-	if(characterProvidedName.toLowerCase().split(".").length !=2){
-		global_client.say(globalChannel, `@${tags.username}, please check that your username is typed correctly.`);
-		return false;
-	}
-	return true;
-}
-
 function RegisterPlayerForRaffle(characterSummary,realmAndCharacterName,tags){
 	var playerFaction = characterSummary['data']['faction']['type'];
 
+	if(characterSummary['data']['level'] != 60){
+		global_client.say(globalChannel, `@${tags.username}, The character you entered must be level 60!`);
+		return;
+	}
 	if(currentRaffleList.includes(realmAndCharacterName)){
 		console.log('race condition met of player entering multiple times quickly');
 		return;
@@ -267,6 +265,7 @@ function RegisterPlayerForRaffle(characterSummary,realmAndCharacterName,tags){
 
 	//store the player's twitch name in case they win
 	global_playerToTwitchNameDictionary[realmAndCharacterName] = tags.username;
+
 
 	currentRaffleList.push(realmAndCharacterName);
 	currentRaffleTwitchName.push(tags.username);
@@ -284,37 +283,11 @@ function FetchPlayerSummary(realm,character){
 function HandleSetWinnersCommand(args,tags){
 	if (args.length != 1){
 		console.log('incorrect args sent to setwinners command');
-		//TODO: maybe make this whisper the person who issued the admin command instead of channel broadcasting
 		global_client.say(globalChannel, `@${tags.username}, please provide only two arguments to the setwinners command. ex: \"!setwinners 15\"`);
 		return;
 	}
 	global_desiredWinnerCount = parseInt(args[0]);
 	global_client.say(globalChannel, `${global_desiredWinnerCount} players will be able to win in the next raffle!`);
-}
-
-function HandleBlizzCommand(args,tags){
-	//TODO need to do index checking
-	let playerInfo = args[0].toLowerCase().split(".");
-	
-	if(!IsPlayerInfoValid(playerInfo))return;
-	if(IsPlayerInCache(playerInfo,tags))return;
-				
-	//wait for a response from the blizzard auth API
-	Promise.resolve(RequestAuthToken())
-	//Now go get the achievement information
-	.then((AuthToken) => {return fetchPlayerAchievementPoints(AuthToken,playerInfo)})
-	//wait for a response from the blizzard achievement API
-	.then((profileResponse) =>{
-		addPlayerAchievementInfoToDictionary(playerInfo,profileResponse);
-		return(profileResponse['data']['total_points']);
-	})
-	.then((achievementPoints) =>{
-		global_client.say(globalChannel, `@${tags.username}, you have: ${achievementPoints} achievement points!`);
-	})
-	.catch((error) => {
-		if(debug)console.log(error);
-		global_client.say(globalChannel, `@${tags.username}, I couldn't find that charater, please ensure that you are giving realm-character. Character should include all special characters.`);
-	});
 }
 
 function getAuthBody(){
@@ -332,22 +305,7 @@ function getAuthBody(){
 	formBody = formBody.join("&");
 	return formBody;
 }
-function IsPlayerInfoValid(playerInfo){
-	if(playerInfo.length != 2){
-		if(debug)console.log("Invalid player arg count")
-		return false;
-	}
-	return true;
-}
 
-function IsPlayerInCache(playerInfo,tags){	
-	if( playerInfo[0]+playerInfo[1] in playerDictionary){
-		if(debug)console.log("retrieved from cache");
-		global_client.say(globalChannel, `@${tags.username}, you have: ${playerDictionary[playerInfo[0]+playerInfo[1]]} achievement points!`);
-		return true;
-	}
-	return false;
-}
 function RequestAuthToken(){
 	//if we already have a token, just return the auth string
 	//TODO: handle auth token expiration, track token receive time so that we reauth when expired (1day token life)
@@ -372,17 +330,10 @@ function HandleAuthResponse(response){
 	}
 }
 
-function fetchPlayerAchievementPoints(AuthToken,playerInfo){
-	var getURL = 'https://us.api.blizzard.com/profile/wow/character/'+playerInfo[0]+'/'+playerInfo[1]+'/achievements';
-	return axios.get(getURL,{params:{namespace : 'profile-us',
-		locale : 'en_US',
-		access_token : AuthToken}})
-}
-
 function FetchPlayerMounts(playerInfo){
 	if(playerInfo == null)return;
 	//playerinfo comes in the form character.realm here right now
-	playerInfo = playerInfo.toLowerCase().split(".");
+	playerInfo = playerInfo.toLowerCase().split("_");
 
 	//playerInfo[1] contains the realm
 	//playerInfo[0] contains the character name
@@ -406,15 +357,9 @@ function DeterminePlayerEligibility(selectedWinner,doesPlayerHaveMount){
 		global_client.say(globalChannel, `@${global_playerToTwitchNameDictionary[selectedWinner]} already has the mount and is NOT eligible for a carry!`);
 	}
 	else{
-		global_client.say(globalChannel, `@${global_playerToTwitchNameDictionary[selectedWinner]} has won a carry with character {{${selectedWinner}}} on ${global_playerFactionDictionary[selectedWinner]} !`);
+		global_client.say(globalChannel, `@${global_playerToTwitchNameDictionary[selectedWinner]} has won a carry with character {{${selectedWinner.replace('_','-')}}} on ${global_playerFactionDictionary[selectedWinner]} !`);
 		global_currentWinnerCount++;
 	}
-}
-
-function addPlayerAchievementInfoToDictionary(playerInfo,profileResponse){
-	//key into dictionary on combination of player realm and name
-	playerDictionary[playerInfo[0]+playerInfo[1]] = profileResponse['data']['total_points'];
-	return(profileResponse['data']['total_points'])
 }
 
 function DoesUserHaveAdminPermissions(tags){
