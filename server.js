@@ -16,6 +16,7 @@ let currentRaffleList = [];
 let currentRaffleTwitchName = [];
 let global_playerFactionDictionary = {};
 let global_playerToTwitchNameDictionary = {};
+let modList = process.env.MOD_LIST;
 //~~~~ END Globals
 
 //client Connection Startup
@@ -71,6 +72,8 @@ global_client.on('message', (channel, tags, message, self) => {
 				break;
 			case 'getwinners':
 				if(!DoesUserHaveAdminPermissions(tags))return;
+				if(isRaffleOpen)return;
+				global_currentWinnerCount = 0;
 				HandleGetWinnersCommand(args,tags);	
 				break;
 			case 'help':
@@ -189,9 +192,9 @@ function ValidateAndParseCharacterInfo(args){
 	var splitByHyphen = combined.split('-');
 	var characterName = splitByHyphen.shift().toLowerCase();
 
-	var remainingRealmInfo = splitByHyphen.join('-'); //ensures hyphens removed in the split get put back in
-	var realmNoWhitespace = remainingRealmInfo.replace(" ","-"); // get rid of realm whitespace for wow API
-	var realmNoWhiteSpaceNoSpecialChar = realmNoWhitespace.replaceAll('\'','').toLowerCase(); //lowercase it and get rid of apostrophes
+	var remainingRealmInfo = splitByHyphen.join(''); //just join back together, but don't add anything back in
+	var realmNoWhitespace = remainingRealmInfo.replaceAll(" ","-"); // get rid of realm whitespace for wow API by replacing all spaces with dashes
+	var realmNoWhiteSpaceNoSpecialChar = realmNoWhitespace.replaceAll('\'','').toLowerCase(); //lowercase it and get rid of apostrophes\
 
 	return [characterName,realmNoWhiteSpaceNoSpecialChar];
 
@@ -357,7 +360,7 @@ function DeterminePlayerEligibility(selectedWinner,doesPlayerHaveMount){
 		global_client.say(globalChannel, `@${global_playerToTwitchNameDictionary[selectedWinner]} already has the mount and is NOT eligible for a carry!`);
 	}
 	else{
-		global_client.say(globalChannel, `@${global_playerToTwitchNameDictionary[selectedWinner]} has won a carry with character {{${selectedWinner.replace('_','-')}}} on ${global_playerFactionDictionary[selectedWinner]} !`);
+		global_client.say(globalChannel, `@${global_playerToTwitchNameDictionary[selectedWinner]} has won a carry with character {{${selectedWinner.replace('_','-')}}} on ${global_playerFactionDictionary[selectedWinner]} ! ${modList}`);
 		global_currentWinnerCount++;
 	}
 }
