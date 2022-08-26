@@ -47,7 +47,6 @@ global_client.on('message', (channel, tags, message, self) => {
 	
 		const args = message.slice(1).trim().split(/\s+/);
 		const command = args.shift().toLowerCase();
-		if(debug)console.log(args);
 
 		//route the command to the appropriate handler
 		switch(command){
@@ -134,7 +133,7 @@ function HandleGetWinnersCommand(args,tags){
 		return HandleGetWinnersCommand(args,tags);
 	})
 	.catch((error) => {
-		if(debug)console.log(error);
+		//if(debug)console.log(error);
 		global_client.say(globalChannel, `An error was encountered while attempting to determine the winners.`);
 	});
 }
@@ -214,7 +213,7 @@ function HandleEnterCommand(args,tags){
 	var realmAndCharacterName = charAndRealm.join('_');
 	var realm = charAndRealm[1];
 	var character = charAndRealm[0];
-	console.log(character + '+' +realm);
+
 	//players can only enter the raffle once
 	if (currentRaffleList.includes(realmAndCharacterName)){
 		global_client.say(globalChannel, `@${tags.username}, you are already entered in the current raffle.`);
@@ -231,7 +230,6 @@ function HandleEnterCommand(args,tags){
 	.then(() => {return FetchPlayerSummary(realm,character)})
 	.then((characterSummary) => {return RegisterPlayerForRaffle(characterSummary,realmAndCharacterName,tags)})
 	.catch((error) => {
-		if(debug)console.log(error); 
 		global_client.say(globalChannel, `@${tags.username}, I couldn't find that charater, please ensure that you are giving character-realm. Character name should include any alt codes for special characters.`);
 	});	
 }
@@ -323,7 +321,7 @@ function RequestAuthToken(){
 }
 function HandleAuthResponse(response){
 	if(response['status'] == 200){
-		if(debug)console.log('have a good response from blizzard auth endpoint')
+		//if(debug)console.log('have a good response from blizzard auth endpoint')
 		global_BlizzardAuthToken =  response['data']['access_token']
 		return response['data']['access_token']
 	}
