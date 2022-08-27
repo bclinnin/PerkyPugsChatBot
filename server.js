@@ -17,6 +17,8 @@ let currentRaffleTwitchName = [];
 let global_playerFactionDictionary = {};
 let global_playerToTwitchNameDictionary = {};
 let modList = process.env.MOD_LIST;
+let timeWindowForThrottle = new Date();
+let messagesInThrottleWindow = 0;
 //~~~~ END Globals
 
 //client Connection Startup
@@ -216,12 +218,12 @@ function HandleEnterCommand(args,tags){
 
 	//players can only enter the raffle once
 	if (currentRaffleList.includes(realmAndCharacterName)){
-		global_client.say(globalChannel, `@${tags.username}, you are already entered in the current raffle.`);
+		if(CanSendMessage()) global_client.say(globalChannel, `@${tags.username}, you are already entered in the current raffle.`);
 		return;
 	}
 	
 	if (!CanTwitchAccountEnterInRaffle(tags)){
-		global_client.say(globalChannel, `@${tags.username}, you may only enter one character in the raffle.`);
+		if(CanSendMessage()) global_client.say(globalChannel, `@${tags.username}, you may only enter one character in the raffle.`);
 		return;
 	}
 
@@ -270,7 +272,7 @@ function RegisterPlayerForRaffle(characterSummary,realmAndCharacterName,tags){
 
 	currentRaffleList.push(realmAndCharacterName);
 	currentRaffleTwitchName.push(tags.username);
-	global_client.say(globalChannel, `@${tags.username}, you are entered.`);
+	//global_client.say(globalChannel, `@${tags.username}, you are entered.`);
 }
 
 function FetchPlayerSummary(realm,character){
@@ -374,6 +376,22 @@ function DoesUserHaveAdminPermissions(tags){
 	if(tags.mod === true){
 		//This is a moderator, grant them access
 		console.log("mod detected");
+		return true;
+	}
+	return false;
+}
+
+function CanSendMessage(){
+	var currentTime = new Date();
+	var diff = ( currentTime.getTime() - timeWindowForThrottle.getTime() ) / 1000; //seconds between throttle window and current time
+	console.log(diff);
+	if(diff > 60){
+		timeWindowForThrottle = currentTime; //reset the window if it has been a minute
+		messagesInThrottleWindow = 0;
+	}
+	if(messagesInThrottleWindow < 70){
+		messagesInThrottleWindow++;
+		console.log(messagesInThrottleWindow);
 		return true;
 	}
 	return false;
