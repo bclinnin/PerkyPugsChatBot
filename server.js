@@ -407,7 +407,7 @@ function SendMessageBuffer(buffer,message){
 	if(buffer.length == 0) return;
 	if(!CanSendMessage()) return; //don't drain the buffer if we are already at message quota
 
-	var usersPerMessage = 1;
+	var usersPerMessage = 10;
 	var count = 0;
 	var userListString = '';
 	while((buffer.length > 0) && (count < usersPerMessage)){
