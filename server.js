@@ -19,6 +19,11 @@ let global_playerToTwitchNameDictionary = {};
 let modList = process.env.MOD_LIST;
 let timeWindowForThrottle = new Date();
 let messagesInThrottleWindow = 0;
+let messageThrottleId;
+let messageBufferSuccessfulEnter = [];
+let messageBufferAlreadyEntered = [];
+let messageBufferCanOnlyEnterOnce = [];
+let messageBufferWrongName = [];
 //~~~~ END Globals
 
 //client Connection Startup
@@ -40,6 +45,12 @@ global_client.connect();
 axiosRetry(axios, { retries: 3 });
 axiosRetry(axios, { retryDelay: axiosRetry.exponentialDelay });
 axiosRetry(axios, {retryCondition: (error)=>{return error.response['status'] === 429}});
+
+//Configure the message throttling service
+setInterval(SendMessageBuffer, 2500, messageBufferSuccessfulEnter, ` you are entered.`);
+setInterval(SendMessageBuffer, 2500, messageBufferAlreadyEntered, ` you are already entered in the current raffle.`);
+setInterval(SendMessageBuffer, 2500, messageBufferCanOnlyEnterOnce, ` you may only enter one character in the raffle.`);
+setInterval(SendMessageBuffer, 2500, messageBufferWrongName, ` I couldn't find that character, please ensure that you are giving character-realm. Character name should include any alt codes for special characters.`);
 
 global_client.on('message', (channel, tags, message, self) => {
 	try{
@@ -200,8 +211,8 @@ function ValidateAndParseCharacterInfo(args){
 	return [characterName,realmNoWhiteSpaceNoSpecialChar];
 
 	}
-	catch(errror){
-		console.log(error);
+	catch(error){
+		//console.log(error);
 	}
 	
 }
@@ -218,12 +229,12 @@ function HandleEnterCommand(args,tags){
 
 	//players can only enter the raffle once
 	if (currentRaffleList.includes(realmAndCharacterName)){
-		if(CanSendMessage()) global_client.say(globalChannel, `@${tags.username}, you are already entered in the current raffle.`);
+		messageBufferAlreadyEntered.push(tags.username);
 		return;
 	}
 	
 	if (!CanTwitchAccountEnterInRaffle(tags)){
-		if(CanSendMessage()) global_client.say(globalChannel, `@${tags.username}, you may only enter one character in the raffle.`);
+		messageBufferCanOnlyEnterOnce.push(tags.username);
 		return;
 	}
 
@@ -232,7 +243,7 @@ function HandleEnterCommand(args,tags){
 	.then(() => {return FetchPlayerSummary(realm,character)})
 	.then((characterSummary) => {return RegisterPlayerForRaffle(characterSummary,realmAndCharacterName,tags)})
 	.catch((error) => {
-		global_client.say(globalChannel, `@${tags.username}, I couldn't find that charater, please ensure that you are giving character-realm. Character name should include any alt codes for special characters.`);
+		messageBufferWrongName.push(tags.username);
 	});	
 }
 
@@ -269,10 +280,9 @@ function RegisterPlayerForRaffle(characterSummary,realmAndCharacterName,tags){
 	//store the player's twitch name in case they win
 	global_playerToTwitchNameDictionary[realmAndCharacterName] = tags.username;
 
-
 	currentRaffleList.push(realmAndCharacterName);
-	currentRaffleTwitchName.push(tags.username);
-	//global_client.say(globalChannel, `@${tags.username}, you are entered.`);
+	currentRaffleTwitchName.push(tags.username);	
+	messageBufferSuccessfulEnter.push(tags.username);
 }
 
 function FetchPlayerSummary(realm,character){
@@ -370,12 +380,10 @@ function DoesUserHaveAdminPermissions(tags){
 	if(tags.badges == null)return false;
 	if('broadcaster' in tags.badges){
 		//This is the streamer, grant them access
-		console.log("this is the broadcaster");
 		return true;
 	}
 	if(tags.mod === true){
 		//This is a moderator, grant them access
-		console.log("mod detected");
 		return true;
 	}
 	return false;
@@ -384,15 +392,29 @@ function DoesUserHaveAdminPermissions(tags){
 function CanSendMessage(){
 	var currentTime = new Date();
 	var diff = ( currentTime.getTime() - timeWindowForThrottle.getTime() ) / 1000; //seconds between throttle window and current time
-	console.log(diff);
-	if(diff > 60){
+	if(diff > 45){
 		timeWindowForThrottle = currentTime; //reset the window if it has been a minute
 		messagesInThrottleWindow = 0;
 	}
 	if(messagesInThrottleWindow < 70){
-		messagesInThrottleWindow++;
-		console.log(messagesInThrottleWindow);
+		console.log('messages in current time window: '+messagesInThrottleWindow);
 		return true;
 	}
 	return false;
+}
+
+function SendMessageBuffer(buffer,message){
+	if(buffer.length == 0) return;
+	if(!CanSendMessage()) return; //don't drain the buffer if we are already at message quota
+
+	var usersPerMessage = 1;
+	var count = 0;
+	var userListString = '';
+	while((buffer.length > 0) && (count < usersPerMessage)){
+		userListString += '@'+buffer.shift() + ' '; 
+	}	
+	if(userListString != ''){
+		messagesInThrottleWindow++;
+		global_client.say(globalChannel, userListString+message);
+	}
 }
