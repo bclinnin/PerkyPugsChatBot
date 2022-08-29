@@ -17,13 +17,18 @@ let currentRaffleTwitchName = [];
 let global_playerFactionDictionary = {};
 let global_playerToTwitchNameDictionary = {};
 let modList = process.env.MOD_LIST;
-let timeWindowForThrottle = new Date();
+let timeWindowForThrottle;
 let messagesInThrottleWindow = 0;
 let messageThrottleId;
 let messageBufferSuccessfulEnter = [];
 let messageBufferAlreadyEntered = [];
 let messageBufferCanOnlyEnterOnce = [];
 let messageBufferWrongName = [];
+const MessagePriority = {
+	Low: 0,
+	Medium: 1,
+	High: 2
+}
 //~~~~ END Globals
 
 //client Connection Startup
@@ -102,29 +107,30 @@ global_client.on('message', (channel, tags, message, self) => {
 });
 
 function HandleHelpCommand(args,tags){
-	global_client.say(globalChannel, `The following commands are accepted.  ||||||  
+	var message = `The following commands are accepted.  ||||||  
 	!echo 'test string to return'  ||||||  
 	!setwinners 'number of winners'  ||||||  
 	!enter 'character'-'realm'  ||||||  
 	!openraffle  ||||||  
 	!closeraffle  ||||||  
 	!getwinners  ||||||  
-	!help`);
+	!help`;
+	SendMessage(MessagePriority.High,message);
 }
 
 function HandleEchoCommand(args,tags){
-	global_client.say(globalChannel, `@${tags.username}, you said: "${args.join(' ')}"`);
+	SendMessage(MessagePriority.High, `@${tags.username}, you said: "${args.join(' ')}"`);
 }
 
 function HandleCloseRaffleCommand(args,tags){
 	//check if raffle is already closed
 	if(!isRaffleOpen){
-		global_client.say(globalChannel, `The raffle is already closed`);
+		SendMessage(MessagePriority.High, `The raffle is already closed`);
 		return;
 	}
 	isRaffleOpen = false;
 	global_currentWinnerCount = 0;
-	global_client.say(globalChannel, `The raffle is now closed`);
+	SendMessage(MessagePriority.High, `The raffle is now closed`);
 }
 
 //This will create a recursive chain of promises that will terminate when ANY of the following base cases are met
@@ -147,18 +153,18 @@ function HandleGetWinnersCommand(args,tags){
 	})
 	.catch((error) => {
 		//if(debug)console.log(error);
-		global_client.say(globalChannel, `An error was encountered while attempting to determine the winners.`);
+		SendMessage(MessagePriority.High, `An error was encountered while attempting to determine the winners.`);
 	});
 }
 
 function ShouldContinueDrawingWinners(){
 	//handle the case of our list being exhausted
 	if(currentRaffleList.length == 0){
-		global_client.say(globalChannel, `There are no more potential winners to be chosen`);
+		SendMessage(MessagePriority.High, `There are no more potential winners to be chosen`);
 		return false;
 	}
 	if(global_currentWinnerCount >= global_desiredWinnerCount){
-		global_client.say(globalChannel, `The max number of winners for this run has been reached!`);
+		SendMessage(MessagePriority.High, `The max number of winners for this run has been reached!`);
 		return false;
 	}
 	return true;
@@ -167,7 +173,7 @@ function ShouldContinueDrawingWinners(){
 function SelectWinnerFromList(){
 	//handle the case of our list being exhausted
 	if(currentRaffleList.length == 0){
-		global_client.say(globalChannel, `There are no more potential winners to be chosen`);
+		SendMessage(MessagePriority.High, `There are no more potential winners to be chosen`);//TODO: i don't know if this is still necessary
 	}
 
 	//randomly select an element from our entered players list
@@ -183,14 +189,14 @@ function SelectWinnerFromList(){
 function HandleOpenRaffleCommand(args,tags){
 	//check if raffle is already open
 	if(isRaffleOpen){
-		global_client.say(globalChannel, `The raffle is already open`);
+		SendMessage(MessagePriority.High, `The raffle is already open`);
 		return;
 	}
 	//clear out the current list of entrants such that they must re-enter for each raffle
 	currentRaffleList = [];
 	currentRaffleTwitchName = [];
 	isRaffleOpen = true;
-	global_client.say(globalChannel, `The raffle is now open`);
+	SendMessage(MessagePriority.High, `The raffle is now open`);
 }
 
 function ValidateAndParseCharacterInfo(args){
@@ -263,7 +269,7 @@ function RegisterPlayerForRaffle(characterSummary,realmAndCharacterName,tags){
 	var playerFaction = characterSummary['data']['faction']['type'];
 
 	if(characterSummary['data']['level'] != 60){
-		global_client.say(globalChannel, `@${tags.username}, The character you entered must be level 60!`);
+		SendMessage(MessagePriority.Low, `@${tags.username}, The character you entered must be level 60!`);//TODO: maybe make this another buffer
 		return;
 	}
 	if(currentRaffleList.includes(realmAndCharacterName)){
@@ -296,11 +302,11 @@ function FetchPlayerSummary(realm,character){
 function HandleSetWinnersCommand(args,tags){
 	if (args.length != 1){
 		console.log('incorrect args sent to setwinners command');
-		global_client.say(globalChannel, `@${tags.username}, please provide only two arguments to the setwinners command. ex: \"!setwinners 15\"`);
+		SendMessage(MessagePriority.High, `@${tags.username}, please provide only two arguments to the setwinners command. ex: \"!setwinners 15\"`);
 		return;
 	}
 	global_desiredWinnerCount = parseInt(args[0]);
-	global_client.say(globalChannel, `${global_desiredWinnerCount} players will be able to win in the next raffle!`);
+	SendMessage(MessagePriority.High, `${global_desiredWinnerCount} players will be able to win in the next raffle!`);
 }
 
 function getAuthBody(){
@@ -367,10 +373,10 @@ function FindMountInCollection(playerMountCollection){
 function DeterminePlayerEligibility(selectedWinner,doesPlayerHaveMount){
 	if(selectedWinner == null)return;
 	if(doesPlayerHaveMount){
-		global_client.say(globalChannel, `@${global_playerToTwitchNameDictionary[selectedWinner]} already has the mount and is NOT eligible for a carry!`);
+		SendMessage(MessagePriority.High, `@${global_playerToTwitchNameDictionary[selectedWinner]} already has the mount and is NOT eligible for a carry!`);
 	}
 	else{
-		global_client.say(globalChannel, `@${global_playerToTwitchNameDictionary[selectedWinner]} has won a carry with character {{${selectedWinner.replace('_','-')}}} on ${global_playerFactionDictionary[selectedWinner]} ! ${modList}`);
+		SendMessage(MessagePriority.High, `@${global_playerToTwitchNameDictionary[selectedWinner]} has won a carry with character {{${selectedWinner.replace('_','-')}}} on ${global_playerFactionDictionary[selectedWinner]} ! ${modList}`);
 		global_currentWinnerCount++;
 	}
 }
@@ -389,23 +395,35 @@ function DoesUserHaveAdminPermissions(tags){
 	return false;
 }
 
-function CanSendMessage(){
+function CanSendMessage(priorityLevel){
+	if (timeWindowForThrottle == undefined){
+		timeWindowForThrottle = new Date();
+	}
 	var currentTime = new Date();
 	var diff = ( currentTime.getTime() - timeWindowForThrottle.getTime() ) / 1000; //seconds between throttle window and current time
-	if(diff > 45){
-		timeWindowForThrottle = currentTime; //reset the window if it has been a minute
+	if(diff > 30){
+		timeWindowForThrottle = currentTime; //reset the window if it has been 30 seconds
 		messagesInThrottleWindow = 0;
 	}
-	if(messagesInThrottleWindow < 70){
-		console.log('messages in current time window: '+messagesInThrottleWindow);
+	if((priorityLevel == MessagePriority.High) && (messagesInThrottleWindow < 90)){
+		return true;
+	}
+	if((priorityLevel == MessagePriority.Low) && (messagesInThrottleWindow < 70)){
 		return true;
 	}
 	return false;
 }
 
+function SendMessage(priorityLevel,message){
+	if(!CanSendMessage(priorityLevel))console.log('turned away message with priority level of '+priorityLevel+' with message '+message);
+	messagesInThrottleWindow++;
+	global_client.say(globalChannel, message);
+	console.log('messages in current time window: '+messagesInThrottleWindow);
+}
+
 function SendMessageBuffer(buffer,message){
 	if(buffer.length == 0) return;
-	if(!CanSendMessage()) return; //don't drain the buffer if we are already at message quota
+	if(!CanSendMessage(MessagePriority.Low)) return; //don't drain the buffer if we are already at message quota for low priorty
 
 	var usersPerMessage = 10;
 	var count = 0;
@@ -416,5 +434,6 @@ function SendMessageBuffer(buffer,message){
 	if(userListString != ''){
 		messagesInThrottleWindow++;
 		global_client.say(globalChannel, userListString+message);
+		console.log('messages in current time window: '+messagesInThrottleWindow);
 	}
 }
