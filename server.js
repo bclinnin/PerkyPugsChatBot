@@ -405,7 +405,7 @@ function CanSendMessage(priorityLevel){
 		timeWindowForThrottle = currentTime; //reset the window if it has been 30 seconds
 		messagesInThrottleWindow = 0;
 	}
-	if((priorityLevel == MessagePriority.High) && (messagesInThrottleWindow < 90)){
+	if((priorityLevel == MessagePriority.High) && (messagesInThrottleWindow < 95)){
 		return true;
 	}
 	if((priorityLevel == MessagePriority.Low) && (messagesInThrottleWindow < 70)){
