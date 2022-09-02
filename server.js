@@ -249,7 +249,7 @@ function HandleEnterCommand(args,tags){
 	.then(() => {return FetchPlayerSummary(realm,character)})
 	.then((characterSummary) => {return RegisterPlayerForRaffle(characterSummary,realmAndCharacterName,tags)})
 	.catch((error) => {
-		messageBufferWrongName.push(tags.username);
+		if(isRaffleOpen)messageBufferWrongName.push(tags.username);		
 	});	
 }
 
@@ -266,6 +266,9 @@ function CanTwitchAccountEnterInRaffle(tags){
 }
 
 function RegisterPlayerForRaffle(characterSummary,realmAndCharacterName,tags){
+	//raffle must still be open to register the player
+	if(!isRaffleOpen)return;
+	
 	var playerFaction = characterSummary['data']['faction']['type'];
 
 	if(characterSummary['data']['level'] != 60){
@@ -425,12 +428,13 @@ function SendMessageBuffer(buffer,message){
 	if(buffer.length == 0) return;
 	if(!CanSendMessage(MessagePriority.Low)) return; //don't drain the buffer if we are already at message quota for low priorty
 
-	var usersPerMessage = 10;
+	var usersPerMessage = 25;
 	var count = 0;
 	var userListString = '';
 	while((buffer.length > 0) && (count < usersPerMessage)){
 		userListString += '@'+buffer.shift() + ' '; 
-	}	
+		count++;
+	}
 	if(userListString != ''){
 		messagesInThrottleWindow++;
 		global_client.say(globalChannel, userListString+message);
