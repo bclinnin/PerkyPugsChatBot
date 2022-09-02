@@ -268,7 +268,7 @@ function CanTwitchAccountEnterInRaffle(tags){
 function RegisterPlayerForRaffle(characterSummary,realmAndCharacterName,tags){
 	//raffle must still be open to register the player
 	if(!isRaffleOpen)return;
-	
+
 	var playerFaction = characterSummary['data']['faction']['type'];
 
 	if(characterSummary['data']['level'] != 60){
@@ -418,7 +418,10 @@ function CanSendMessage(priorityLevel){
 }
 
 function SendMessage(priorityLevel,message){
-	if(!CanSendMessage(priorityLevel))console.log('turned away message with priority level of '+priorityLevel+' with message '+message);
+	if(!CanSendMessage(priorityLevel)){
+		console.log('turned away message with priority level of '+priorityLevel+' with message '+message);
+		return;
+	}
 	messagesInThrottleWindow++;
 	global_client.say(globalChannel, message);
 	console.log('messages in current time window: '+messagesInThrottleWindow);
