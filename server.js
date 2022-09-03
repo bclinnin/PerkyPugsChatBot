@@ -158,6 +158,7 @@ function HandleGetWinnersCommand(args,tags){
 }
 
 function ShouldContinueDrawingWinners(){
+	console.log('figuring out if I should continue');
 	//handle the case of our list being exhausted
 	if(currentRaffleList.length == 0){
 		SendMessage(MessagePriority.High, `There are no more potential winners to be chosen`);
@@ -171,6 +172,7 @@ function ShouldContinueDrawingWinners(){
 }
 
 function SelectWinnerFromList(){
+	console.log('selecting winner');
 	//handle the case of our list being exhausted
 	if(currentRaffleList.length == 0){
 		SendMessage(MessagePriority.High, `There are no more potential winners to be chosen`);//TODO: i don't know if this is still necessary
@@ -353,6 +355,7 @@ function HandleAuthResponse(response){
 }
 
 function FetchPlayerMounts(playerInfo){
+	console.log('fetching player mounts');
 	if(playerInfo == null)return;
 	//playerinfo comes in the form character.realm here right now
 	playerInfo = playerInfo.toLowerCase().split("_");
@@ -366,6 +369,7 @@ function FetchPlayerMounts(playerInfo){
 }
 
 function FindMountInCollection(playerMountCollection){
+	console.log('parsing mounts');
 	if(playerMountCollection == null)return;
 	for(var mount of playerMountCollection['data']['mounts']){
 		if(mount['mount']['id']==process.env.AOTC_MOUNT_ID)return true;
@@ -374,6 +378,7 @@ function FindMountInCollection(playerMountCollection){
 }
 
 function DeterminePlayerEligibility(selectedWinner,doesPlayerHaveMount){
+	console.log('determining if player can win');
 	if(selectedWinner == null)return;
 	if(doesPlayerHaveMount){
 		SendMessage(MessagePriority.High, `@${global_playerToTwitchNameDictionary[selectedWinner]} already has the mount and is NOT eligible for a carry!`);
