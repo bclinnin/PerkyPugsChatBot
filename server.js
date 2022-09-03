@@ -152,8 +152,8 @@ function HandleGetWinnersCommand(args,tags){
 		return HandleGetWinnersCommand(args,tags);
 	})
 	.catch((error) => {
-		//if(debug)console.log(error);
-		SendMessage(MessagePriority.High, `An error was encountered while attempting to determine the winners.`);
+		console.log(error);
+		SendMessage(MessagePriority.High, `An error was encountered while attempting to determine the winners. Please run !setwinners with the number you still want to draw, then run !getwinners again.`);
 	});
 }
 
@@ -344,7 +344,6 @@ function RequestAuthToken(){
 }
 function HandleAuthResponse(response){
 	if(response['status'] == 200){
-		//if(debug)console.log('have a good response from blizzard auth endpoint')
 		global_BlizzardAuthToken =  response['data']['access_token']
 		return response['data']['access_token']
 	}
@@ -356,8 +355,11 @@ function HandleAuthResponse(response){
 
 function FetchPlayerMounts(playerInfo){
 	console.log('fetching player mounts');
-	if(playerInfo == null)return;
-	//playerinfo comes in the form character.realm here right now
+	if(playerInfo == null){
+		console.log('bailing out of fetching player mounts because no info provided.');
+		throw new Error('bailing out of fetching player mounts because no info provided.');
+	}
+	//playerinfo comes in the form character_realm here right now
 	playerInfo = playerInfo.toLowerCase().split("_");
 
 	//playerInfo[1] contains the realm
@@ -370,7 +372,10 @@ function FetchPlayerMounts(playerInfo){
 
 function FindMountInCollection(playerMountCollection){
 	console.log('parsing mounts');
-	if(playerMountCollection == null)return;
+	if(playerMountCollection == null){
+		console.log('received an empty collection of mounts');
+		throw new Error('received an empty collection of mounts');
+	}
 	for(var mount of playerMountCollection['data']['mounts']){
 		if(mount['mount']['id']==process.env.AOTC_MOUNT_ID)return true;
 	}
@@ -379,7 +384,10 @@ function FindMountInCollection(playerMountCollection){
 
 function DeterminePlayerEligibility(selectedWinner,doesPlayerHaveMount){
 	console.log('determining if player can win');
-	if(selectedWinner == null)return;
+	if(selectedWinner == null){
+		console.log('no valid player was sent in to determine eligibility');
+		throw new Error('no valid player was sent in to determine eligibility');
+	}
 	if(doesPlayerHaveMount){
 		SendMessage(MessagePriority.High, `@${global_playerToTwitchNameDictionary[selectedWinner]} already has the mount and is NOT eligible for a carry!`);
 	}
