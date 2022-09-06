@@ -49,7 +49,7 @@ global_client.connect();
 //Configure axios retry for potential throttling from blizzard
 axiosRetry(axios, { retries: 3 });
 axiosRetry(axios, { retryDelay: axiosRetry.exponentialDelay });
-axiosRetry(axios, {retryCondition: (error)=>{return error.response['status'] === 429}});
+axiosRetry(axios, {retryCondition: (error)=>{console.log('429 retry'); return error.response['status'] === 429}});
 
 //Configure the message throttling service
 setInterval(SendMessageBuffer, 2500, messageBufferSuccessfulEnter, ` you are entered.`);
