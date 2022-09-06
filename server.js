@@ -47,9 +47,14 @@ if( !global_client){
 global_client.connect();
 
 //Configure axios retry for potential throttling from blizzard
-axiosRetry(axios, { retries: 3 });
+axiosRetry(axios, { retries: 10 });
 axiosRetry(axios, { retryDelay: axiosRetry.exponentialDelay });
-axiosRetry(axios, {retryCondition: (error)=>{console.log('retry condition status '+error.response['status']); return error.response['status'] === 429}});
+axiosRetry(axios, {retryCondition: (error)=>{
+	if(error.response == undefined){
+		console.log('undefined response, retrying');
+		return true;
+	}
+console.log('retry condition status '+error.response['status']); return error.response['status'] === 429}});
 
 //Configure the message throttling service
 setInterval(SendMessageBuffer, 2500, messageBufferSuccessfulEnter, ` you are entered.`);
@@ -367,7 +372,8 @@ function FetchPlayerMounts(playerInfo){
 	var getURL = 'https://us.api.blizzard.com/profile/wow/character/'+playerInfo[1]+'/'+playerInfo[0]+'/collections/mounts';
 	return axios.get(getURL,{params:{namespace : 'profile-us',
 		locale : 'en_US',
-		access_token : global_BlizzardAuthToken}})	
+		access_token : global_BlizzardAuthToken},
+		timeout : 3000});
 }
 
 function FindMountInCollection(playerMountCollection){
