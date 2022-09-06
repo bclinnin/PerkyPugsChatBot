@@ -47,9 +47,7 @@ if( !global_client){
 global_client.connect();
 
 //Configure axios retry for potential throttling from blizzard
-axiosRetry(axios, { retries: 10 });
-axiosRetry(axios, { retryDelay: axiosRetry.exponentialDelay });
-axiosRetry(axios, {retryCondition: (error)=>{
+axiosRetry(axios, { retryDelay: axiosRetry.exponentialDelay, retries: 10, retryCondition: (error)=>{
 	if(error.response == undefined){
 		console.log('undefined response, retrying');
 		return true;
@@ -373,7 +371,7 @@ function FetchPlayerMounts(playerInfo){
 	return axios.get(getURL,{params:{namespace : 'profile-us',
 		locale : 'en_US',
 		access_token : global_BlizzardAuthToken},
-		timeout : 3000});
+		timeout : 3});
 }
 
 function FindMountInCollection(playerMountCollection){
