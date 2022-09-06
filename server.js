@@ -371,7 +371,7 @@ function FetchPlayerMounts(playerInfo){
 	return axios.get(getURL,{params:{namespace : 'profile-us',
 		locale : 'en_US',
 		access_token : global_BlizzardAuthToken},
-		timeout : 3});
+		timeout : 3000});
 }
 
 function FindMountInCollection(playerMountCollection){
