@@ -47,7 +47,7 @@ if( !global_client){
 global_client.connect();
 
 //Configure axios retry for potential throttling from blizzard
-axiosRetry(axios, { retryDelay: axiosRetry.exponentialDelay, retries: 10, retryCondition: (error)=>{
+axiosRetry(axios, { retryDelay: axiosRetry.exponentialDelay, retries: 5, retryCondition: (error)=>{
 	if(error.response == undefined){
 		console.log('undefined response, retrying');
 		return true;
