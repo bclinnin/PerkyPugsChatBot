@@ -303,7 +303,8 @@ function FetchPlayerSummary(realm,character){
 	var getURL = 'https://us.api.blizzard.com/profile/wow/character/'+realm+'/'+character;
 	return axios.get(getURL,{params:{namespace : 'profile-us',
 		locale : 'en_US',
-		access_token : global_BlizzardAuthToken}})
+		access_token : global_BlizzardAuthToken},
+		timeout : process.env.API_TIMEOUT_MS})
 
 }
 
@@ -342,7 +343,7 @@ function RequestAuthToken(){
 	let formBody = getAuthBody();	
 	return Promise.resolve(axios.post('https://us.battle.net/oauth/token',
 	formBody,
-	{headers: {'content-type':'application/x-www-form-urlencoded'}}))
+	{headers: {'content-type':'application/x-www-form-urlencoded'},timeout : process.env.API_TIMEOUT_MS}))
 	.then((response) => {return HandleAuthResponse(response)});
 }
 function HandleAuthResponse(response){
@@ -371,7 +372,7 @@ function FetchPlayerMounts(playerInfo){
 	return axios.get(getURL,{params:{namespace : 'profile-us',
 		locale : 'en_US',
 		access_token : global_BlizzardAuthToken},
-		timeout : 3000});
+		timeout : process.env.API_TIMEOUT_MS});
 }
 
 function FindMountInCollection(playerMountCollection){
