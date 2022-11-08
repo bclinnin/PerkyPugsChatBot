@@ -52,7 +52,8 @@ axiosRetry(axios, { retryDelay: axiosRetry.exponentialDelay, retries: 5, shouldR
 		console.log('undefined response, retrying');
 		return true;
 	}
-console.log('retry condition status '+error.response['status']); return error.response['status'] === 429}});
+console.log('retry condition status '+error.response['status']); 
+return ((error.response['status'] === 429) || (error.response['status'] === 500))}});
 
 //Configure the message throttling service
 setInterval(SendMessageBuffer, 2500, messageBufferSuccessfulEnter, ` you are entered.`);
