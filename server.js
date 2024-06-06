@@ -1,9 +1,12 @@
 const tmi = require('tmi.js');
 const axios = require('axios');
 const axiosRetry = require('axios-retry');
+dataAccess=require('./dataAccess');
 require('dotenv').config();
 
+dataAccess.dbStartup();
 //~~~~ Globals
+const const_maxLevel = 70;
 var global_BlizzardAuthToken;
 var playerDictionary = {};
 let global_client;
@@ -277,7 +280,7 @@ function RegisterPlayerForRaffle(characterSummary,realmAndCharacterName,tags){
 
 	var playerFaction = characterSummary['data']['faction']['type'];
 
-	if(characterSummary['data']['level'] != 60){
+	if(characterSummary['data']['level'] != const_maxLevel){
 		SendMessage(MessagePriority.Low, `@${tags.username}, The character you entered must be level 60!`);//TODO: maybe make this another buffer
 		return;
 	}
