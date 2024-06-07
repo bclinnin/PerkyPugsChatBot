@@ -146,14 +146,9 @@ function HandleCloseRaffleCommand(args,tags){
 function HandleGetWinnersCommand(args,tags){
 	if(isRaffleOpen)return;
 
-	var trackedwinner;
 	Promise.resolve(RequestAuthToken())
 	.then(()=>{return SelectWinnerFromList()})
-	.then((winner)=>{
-		trackedwinner = winner;
-		return FetchPlayerMounts(winner)})
-	.then((playerMountCollection)=>{return FindMountInCollection(playerMountCollection)})
-	.then((doesPlayerHaveMount) => {return DeterminePlayerEligibility(trackedwinner,doesPlayerHaveMount)})
+	.then((winner) => {return DeterminePlayerEligibility(winner)})
 	.then(()=>{
 		if(!ShouldContinueDrawingWinners())return;
 		return HandleGetWinnersCommand(args,tags);
@@ -162,6 +157,23 @@ function HandleGetWinnersCommand(args,tags){
 		console.log(error);
 		SendMessage(MessagePriority.High, `An error was encountered while attempting to determine the winners. Please run !setwinners with the number you still want to draw, then run !getwinners again.`);
 	});
+}
+
+function CheckDatabaseForEligibility(winner){
+	//see if they have won on this twitch account before
+	if(global_playerToTwitchNameDictionary[winner] in dataAccess.previousWinnersByTwitchName){
+		//this player has won before on this twitch account
+		SendMessage(MessagePriority.High, `${global_playerToTwitchNameDictionary[winner]} has won on this twitch account before`);//TODO: don't disclose this to users on launch
+		return false;
+	}
+
+	if(winner in dataAccess.previousWinnersByRealmCharacterCombo){
+		//this player has won before with this specific WOW character
+		SendMessage(MessagePriority.High, `${winner} has won on this WOW character before`);//TODO: don't disclose this to users on launch
+		return false;
+	}
+	return true;
+
 }
 
 function ShouldContinueDrawingWinners(){
@@ -281,7 +293,7 @@ function RegisterPlayerForRaffle(characterSummary,realmAndCharacterName,tags){
 	var playerFaction = characterSummary['data']['faction']['type'];
 
 	if(characterSummary['data']['level'] != const_maxLevel){
-		SendMessage(MessagePriority.Low, `@${tags.username}, The character you entered must be level 60!`);//TODO: maybe make this another buffer
+		SendMessage(MessagePriority.Low, `@${tags.username}, The character you entered must be level ${const_maxLevel}!`);//TODO: maybe make this another buffer
 		return;
 	}
 	if(currentRaffleList.includes(realmAndCharacterName)){
@@ -391,21 +403,74 @@ function FindMountInCollection(playerMountCollection){
 	return false;
 }
 
-function DeterminePlayerEligibility(selectedWinner,doesPlayerHaveMount){
+async function DeterminePlayerEligibility(selectedWinner){
 	console.log('determining if player can win');
 	if(selectedWinner == null){
 		console.log('no valid player was sent in to determine eligibility');
 		throw new Error('no valid player was sent in to determine eligibility');
 	}
-	if(doesPlayerHaveMount){
-		SendMessage(MessagePriority.High, `@${global_playerToTwitchNameDictionary[selectedWinner]} already has the mount and is NOT eligible for a carry!`);
+	//check the quick stuff first and short circuit out if this person isn't eligible
+	if(!CheckDatabaseForEligibility(selectedWinner))return;
+
+	//playerinfo comes in the form character_realm here right now
+	playerInfo = selectedWinner.toLowerCase().split("_");
+
+	//playerInfo[1] contains the realm
+	//playerInfo[0] contains the character name
+	///profile/wow/character/{realmSlug}/{characterName}/encounters/raids
+	var getURL = 'https://us.api.blizzard.com/profile/wow/character/'+playerInfo[1]+'/'+playerInfo[0]+'/encounters/raids';
+	var apiResponse;
+	await axios.get(getURL,{params:{namespace : 'profile-us',
+		locale : 'en_US',
+		access_token : global_BlizzardAuthToken},
+		timeout : process.env.API_TIMEOUT_MS})
+	.then((result)=>apiResponse = result['data']['expansions']);
+	
+	for(var expansionTopLevel of apiResponse){
+		if(expansionTopLevel.expansion.id == 503){ // find season 3
+			if(HasPlayerKilledFyrakk(expansionTopLevel.instances)){
+				SendMessage(MessagePriority.High, `@${global_playerToTwitchNameDictionary[selectedWinner]} already has the appearance and is NOT eligible for a carry!`);
+				return;
+			};
+			
+		}
+		if(expansionTopLevel.expansion.id == 505){ // find season 4
+			if(HasPlayerKilledFyrakk(expansionTopLevel.instances)){
+				SendMessage(MessagePriority.High, `@${global_playerToTwitchNameDictionary[selectedWinner]} already has the appearance and is NOT eligible for a carry!`);
+				return;
+			};
+		}
 	}
-	else{
-		SendMessage(MessagePriority.High, `@${global_playerToTwitchNameDictionary[selectedWinner]} has won a carry with character {{${selectedWinner.replace('_','-')}}} on ${global_playerFactionDictionary[selectedWinner]} ! ${modList}`);
-		global_currentWinnerCount++;
-	}
+	dataAccess.PersistNewWinner(global_playerToTwitchNameDictionary[selectedWinner],playerInfo[1],playerInfo[0],selectedWinner);
+	dataAccess.AddNameToTwitchWinnersList(global_playerToTwitchNameDictionary[selectedWinner]);
+	dataAccess.AddNameToCharacterWinnersList(selectedWinner);
+	SendMessage(MessagePriority.High, `@${global_playerToTwitchNameDictionary[selectedWinner]} has won a carry with character {{${selectedWinner.replace('_','-')}}} on ${global_playerFactionDictionary[selectedWinner]} ! ${modList}`);
+	global_currentWinnerCount++;
 }
 
+function HasPlayerKilledFyrakk(JsonBlob){
+	//enumerate the instances to find Amirdrassil
+	for(var instance of JsonBlob){
+		//check for Amirdrassil raid ID
+		if(instance.instance.id == 1207){
+			console.log("found s3 amirdrassil");					
+			for(var difficulty of instance.modes){
+				if(difficulty.difficulty.name == 'Heroic'){
+					for(var encounter of difficulty.progress.encounters){
+						//Fyrakk encounter id
+						if(encounter.encounter.id == 2519){
+							if(encounter.completed_count >0){
+								console.log("this player has killed Fyrakk on heroic before");
+								return true;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return false;
+}
 function DoesUserHaveAdminPermissions(tags){
 	if(tags == null)return false;
 	if(tags.badges == null)return false;

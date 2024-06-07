@@ -1,6 +1,6 @@
 {
   "name": "perkypugschatbot",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Twitch chat bot for perky pugs",
   "main": "server.js",
   "scripts": {
