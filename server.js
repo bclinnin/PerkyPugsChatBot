@@ -27,6 +27,8 @@ let messageBufferSuccessfulEnter = [];
 let messageBufferAlreadyEntered = [];
 let messageBufferCanOnlyEnterOnce = [];
 let messageBufferWrongName = [];
+let messageBufferRemix = [];
+let messageBufferMaxLevel = [];
 const MessagePriority = {
 	Low: 0,
 	Medium: 1,
@@ -63,6 +65,8 @@ setInterval(SendMessageBuffer, 2500, messageBufferSuccessfulEnter, ` you are ent
 setInterval(SendMessageBuffer, 2500, messageBufferAlreadyEntered, ` you are already entered in the current raffle.`);
 setInterval(SendMessageBuffer, 2500, messageBufferCanOnlyEnterOnce, ` you may only enter one character in the raffle.`);
 setInterval(SendMessageBuffer, 2500, messageBufferWrongName, ` I couldn't find that character, please ensure that you are giving character-realm. Character name should include any alt codes for special characters.`);
+setInterval(SendMessageBuffer, 2500, messageBufferRemix, ` You cannot enter with a MOP remix character.  Please use a standard retail character!`);
+setInterval(SendMessageBuffer, 2500, messageBufferMaxLevel, ` The character you entered must be level ${const_maxLevel}!`);
 
 global_client.on('message', (channel, tags, message, self) => {
 	try{
@@ -163,13 +167,13 @@ function CheckDatabaseForEligibility(winner){
 	//see if they have won on this twitch account before
 	if(global_playerToTwitchNameDictionary[winner] in dataAccess.previousWinnersByTwitchName){
 		//this player has won before on this twitch account
-		SendMessage(MessagePriority.High, `${global_playerToTwitchNameDictionary[winner]} has won on this twitch account before`);//TODO: don't disclose this to users on launch
+		SendMessage(MessagePriority.High, `@${global_playerToTwitchNameDictionary[winner]} has won on this twitch account before`);//TODO: don't disclose this to users on launch
 		return false;
 	}
 
 	if(winner in dataAccess.previousWinnersByRealmCharacterCombo){
 		//this player has won before with this specific WOW character
-		SendMessage(MessagePriority.High, `${winner} has won on this WOW character before`);//TODO: don't disclose this to users on launch
+		SendMessage(MessagePriority.High, `@${winner} has won on this WOW character before`);//TODO: don't disclose this to users on launch
 		return false;
 	}
 	return true;
@@ -293,9 +297,15 @@ function RegisterPlayerForRaffle(characterSummary,realmAndCharacterName,tags){
 	var playerFaction = characterSummary['data']['faction']['type'];
 
 	if(characterSummary['data']['level'] != const_maxLevel){
-		SendMessage(MessagePriority.Low, `@${tags.username}, The character you entered must be level ${const_maxLevel}!`);//TODO: maybe make this another buffer
+		messageBufferMaxLevel.push(tags.username);
 		return;
 	}
+
+	if(characterSummary['data']['is_remix'] == true){
+		messageBufferRemix.push(tags.username);
+		return;
+	}
+
 	if(currentRaffleList.includes(realmAndCharacterName)){
 		console.log('race condition met of player entering multiple times quickly');
 		return;
