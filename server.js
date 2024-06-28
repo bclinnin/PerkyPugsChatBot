@@ -34,6 +34,15 @@ const MessagePriority = {
 	Medium: 1,
 	High: 2
 }
+let cannedMessages = [
+"To enter the raffle, type in !enter name-realm. Please include any special characters - the bot will @ you to tell you that your character hasn’t been found, or that you had an error.",
+"No, there is no bad luck protection.",
+"Like what we’re doing? Donate to our campaign to raise money for Gamers Outreach! https://tiltify.com/+perky-pugs/friendshipdragon2",
+"Interested in learning more about Perky Pugs? Join our Discord! Discord.gg/PerkyPugs", 
+"If you are having trouble entering the raffle, please see the #FriendshipDragon2 channel in the Perky Pugs Discord or DM the Modmail bot for more detailed help. Discord.gg/PerkyPugs"
+]
+let cannedMessageMax = cannedMessages.length;
+let currentMessage = 0;
 //~~~~ END Globals
 
 //client Connection Startup
@@ -50,6 +59,7 @@ if( !global_client){
 });
 }
 global_client.connect();
+globalChannel = process.env.TWITCH_CHANNEL_NAME;
 
 //Configure axios retry for potential throttling from blizzard
 axiosRetry(axios, { retryDelay: axiosRetry.exponentialDelay, retries: 5, shouldResetTimeout: true, retryCondition: (error)=>{
@@ -67,12 +77,13 @@ setInterval(SendMessageBuffer, 2500, messageBufferCanOnlyEnterOnce, ` you may on
 setInterval(SendMessageBuffer, 2500, messageBufferWrongName, ` I couldn't find that character, please ensure that you are giving character-realm. Character name should include any alt codes for special characters.`);
 setInterval(SendMessageBuffer, 2500, messageBufferRemix, ` You cannot enter with a MOP remix character.  Please use a standard retail character!`);
 setInterval(SendMessageBuffer, 2500, messageBufferMaxLevel, ` The character you entered must be level ${const_maxLevel}!`);
+setInterval(RotateCannedMessages, 120000);
 
 global_client.on('message', (channel, tags, message, self) => {
 	try{
 		if(self || !message.startsWith('!')) return;
 		//map channel to global scope for simplicity
-		globalChannel=channel;
+		//globalChannel=channel;
 	
 		const args = message.slice(1).trim().split(/\s+/);
 		const command = args.shift().toLowerCase();
@@ -439,14 +450,16 @@ async function DeterminePlayerEligibility(selectedWinner){
 	for(var expansionTopLevel of apiResponse){
 		if(expansionTopLevel.expansion.id == 503){ // find season 3
 			if(HasPlayerKilledFyrakk(expansionTopLevel.instances)){
-				SendMessage(MessagePriority.High, `@${global_playerToTwitchNameDictionary[selectedWinner]} already has the appearance and is NOT eligible for a carry!`);
+				console.log(`@${global_playerToTwitchNameDictionary[selectedWinner]} already has the appearance and is NOT eligible for a carry!`);
+				SendMessage(MessagePriority.High, `@${global_playerToTwitchNameDictionary[selectedWinner]} is not eligible!`);
 				return;
 			};
 			
 		}
 		if(expansionTopLevel.expansion.id == 505){ // find season 4
 			if(HasPlayerKilledFyrakk(expansionTopLevel.instances)){
-				SendMessage(MessagePriority.High, `@${global_playerToTwitchNameDictionary[selectedWinner]} already has the appearance and is NOT eligible for a carry!`);
+				console.log(`@${global_playerToTwitchNameDictionary[selectedWinner]} already has the appearance and is NOT eligible for a carry!`);
+				SendMessage(MessagePriority.High, `@${global_playerToTwitchNameDictionary[selectedWinner]} is not eligible!`);
 				return;
 			};
 		}
@@ -539,5 +552,19 @@ function SendMessageBuffer(buffer,message){
 		messagesInThrottleWindow++;
 		global_client.say(globalChannel, userListString+message);
 		console.log('messages in current time window: '+messagesInThrottleWindow);
+	}
+}
+
+function RotateCannedMessages(){
+	//only send out canned messages if there isn't an ongoing raffle
+	if(!isRaffleOpen){
+		//check if we are out of bounds of messages
+		if(currentMessage > (cannedMessageMax-1)){
+			currentMessage = 0;
+		}
+		if(CanSendMessage){
+			global_client.say(globalChannel, cannedMessages[currentMessage]);
+			currentMessage++;
+		}
 	}
 }
