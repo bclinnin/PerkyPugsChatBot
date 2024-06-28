@@ -557,14 +557,15 @@ function SendMessageBuffer(buffer,message){
 
 function RotateCannedMessages(){
 	//only send out canned messages if there isn't an ongoing raffle
-	if(!isRaffleOpen){
-		//check if we are out of bounds of messages
-		if(currentMessage > (cannedMessageMax-1)){
-			currentMessage = 0;
-		}
-		if(CanSendMessage){
-			global_client.say(globalChannel, cannedMessages[currentMessage]);
-			currentMessage++;
-		}
+	if(isRaffleOpen)return;
+
+	//only send out canned message if we have room 
+	if(!CanSendMessage)return;
+
+	//check if we are out of bounds of messages
+	if(currentMessage > (cannedMessageMax-1)){
+		currentMessage = 0;
 	}
+	global_client.say(globalChannel, cannedMessages[currentMessage]);
+	currentMessage++;
 }
