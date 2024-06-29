@@ -29,6 +29,7 @@ let messageBufferCanOnlyEnterOnce = [];
 let messageBufferWrongName = [];
 let messageBufferRemix = [];
 let messageBufferMaxLevel = [];
+let cannotEnterBuffer = [];
 const MessagePriority = {
 	Low: 0,
 	Medium: 1,
@@ -78,6 +79,7 @@ setInterval(SendMessageBuffer, 2500, messageBufferCanOnlyEnterOnce, ` you may on
 setInterval(SendMessageBuffer, 2500, messageBufferWrongName, ` I couldn't find that character, please ensure that you are giving character-realm. Character name should include any alt codes for special characters.`);
 setInterval(SendMessageBuffer, 2500, messageBufferRemix, ` You cannot enter with a MOP remix character.  Please use a standard retail character!`);
 setInterval(SendMessageBuffer, 2500, messageBufferMaxLevel, ` The character you entered must be level ${const_maxLevel}!`);
+setInterval(SendMessageBuffer, 2500, cannotEnterBuffer, ` The raffle is not accepting new entrants right now.  Please wait until the next raffle to enter. Thanks!`);
 setInterval(RotateCannedMessages, 120000);
 
 global_client.on('message', (channel, tags, message, self) => {
@@ -277,7 +279,10 @@ function ValidateAndParseCharacterInfo(args){
 
 function HandleEnterCommand(args,tags){
 	//raffle must be open to allow new players to enter
-	if(!isRaffleOpen)return;
+	if(!isRaffleOpen){
+		cannotEnterBuffer.push(tags.username);
+		return;
+	}
 
 	var charAndRealm = ValidateAndParseCharacterInfo(args);
 	
@@ -577,7 +582,7 @@ function RotateCannedMessages(){
 
 	//check the global enable/disable toggle
 	if(!messageFeedEnabled)return;
-	
+
 	//only send out canned message if we have room 
 	if(!CanSendMessage)return;
 
