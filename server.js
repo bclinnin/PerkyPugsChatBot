@@ -43,6 +43,7 @@ let cannedMessages = [
 ]
 let cannedMessageMax = cannedMessages.length;
 let currentMessage = 0;
+let messageFeedEnabled = true;
 //~~~~ END Globals
 
 //client Connection Startup
@@ -118,7 +119,19 @@ global_client.on('message', (channel, tags, message, self) => {
 			case 'help':
 				if(!DoesUserHaveAdminPermissions(tags))return;
 				HandleHelpCommand(args,tags);
-				break;		
+				break;
+			case 'apply':
+				if(!DoesUserHaveAdminPermissions(tags))return;
+				HandleApplyCommand(args,tags);
+				break;			
+			case 'enablefeed':
+				if(!DoesUserHaveAdminPermissions(tags))return;
+				ToggleFeed(true,tags);
+				break;
+			case 'disablefeed':
+				if(!DoesUserHaveAdminPermissions(tags))return;
+				ToggleFeed(false,tags);
+				break;	
 			default:
 				break;								
 		}
@@ -136,7 +149,10 @@ function HandleHelpCommand(args,tags){
 	!openraffle  ||||||  
 	!closeraffle  ||||||  
 	!getwinners  ||||||  
-	!help`;
+	!help  ||||||  
+	!apply   ||||||  
+	!enablefeed   ||||||  
+	!disablefeed   ||||||  `;
 	SendMessage(MessagePriority.High,message);
 }
 
@@ -559,6 +575,9 @@ function RotateCannedMessages(){
 	//only send out canned messages if there isn't an ongoing raffle
 	if(isRaffleOpen)return;
 
+	//check the global enable/disable toggle
+	if(!messageFeedEnabled)return;
+	
 	//only send out canned message if we have room 
 	if(!CanSendMessage)return;
 
@@ -568,4 +587,16 @@ function RotateCannedMessages(){
 	}
 	global_client.say(globalChannel, cannedMessages[currentMessage]);
 	currentMessage++;
+}
+
+function HandleApplyCommand(){
+	//only send out canned message if we have room 
+	if(!CanSendMessage)return;
+
+	global_client.say(globalChannel, `Carrier Application: https://forms.gle/Pn2u8ufDH67TbjmW8`);
+}
+
+function ToggleFeed(enableOrDisable){
+	messageFeedEnabled = enableOrDisable;
+	global_client.say(globalChannel, `messageFeed set to `+enableOrDisable);
 }
