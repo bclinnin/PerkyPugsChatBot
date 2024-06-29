@@ -468,27 +468,34 @@ async function DeterminePlayerEligibility(selectedWinner){
 		timeout : process.env.API_TIMEOUT_MS})
 	.then((result)=>apiResponse = result['data']['expansions']);
 	
-	for(var expansionTopLevel of apiResponse){
-		if(expansionTopLevel.expansion.id == 503){ // find season 3
-			if(HasPlayerKilledFyrakk(expansionTopLevel.instances)){
-				console.log(`@${global_playerToTwitchNameDictionary[selectedWinner]} already has the appearance and is NOT eligible for a carry!`);
-				SendMessage(MessagePriority.High, `@${global_playerToTwitchNameDictionary[selectedWinner]} is not eligible!`);
-				return;
-			};
-			
-		}
-		if(expansionTopLevel.expansion.id == 505){ // find season 4
-			if(HasPlayerKilledFyrakk(expansionTopLevel.instances)){
-				console.log(`@${global_playerToTwitchNameDictionary[selectedWinner]} already has the appearance and is NOT eligible for a carry!`);
-				SendMessage(MessagePriority.High, `@${global_playerToTwitchNameDictionary[selectedWinner]} is not eligible!`);
-				return;
-			};
+	//if the player has never killed a raid boss, this'll be null, so check
+	if(apiResponse == undefined){
+		console.log("player has never killed a raid boss");
+	}
+	else{
+		for(var expansionTopLevel of apiResponse){
+			if(expansionTopLevel.expansion.id == 503){ // find season 3
+				if(HasPlayerKilledFyrakk(expansionTopLevel.instances)){
+					console.log(`@${global_playerToTwitchNameDictionary[selectedWinner]} already has the appearance and is NOT eligible for a carry!`);
+					SendMessage(MessagePriority.High, `@${global_playerToTwitchNameDictionary[selectedWinner]} is not eligible!`);
+					return;
+				};
+				
+			}
+			if(expansionTopLevel.expansion.id == 505){ // find season 4
+				if(HasPlayerKilledFyrakk(expansionTopLevel.instances)){
+					console.log(`@${global_playerToTwitchNameDictionary[selectedWinner]} already has the appearance and is NOT eligible for a carry!`);
+					SendMessage(MessagePriority.High, `@${global_playerToTwitchNameDictionary[selectedWinner]} is not eligible!`);
+					return;
+				};
+			}
 		}
 	}
+	
 	dataAccess.PersistNewWinner(global_playerToTwitchNameDictionary[selectedWinner],playerInfo[1],playerInfo[0],selectedWinner);
 	dataAccess.AddNameToTwitchWinnersList(global_playerToTwitchNameDictionary[selectedWinner]);
 	dataAccess.AddNameToCharacterWinnersList(selectedWinner);
-	SendMessage(MessagePriority.High, `@${global_playerToTwitchNameDictionary[selectedWinner]} has won a carry with character {{${selectedWinner.replace('_','-')}}} on ${global_playerFactionDictionary[selectedWinner]} ! ${modList}`);
+	SendMessage(MessagePriority.High, `@${global_playerToTwitchNameDictionary[selectedWinner]} has won a carry with character {{  ${selectedWinner.replace('_','-')}  }} on ${global_playerFactionDictionary[selectedWinner]} ! ${modList}`);
 	global_currentWinnerCount++;
 }
 
