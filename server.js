@@ -34,14 +34,14 @@ const MessagePriority = {
 	Low: 0,
 	Medium: 1,
 	High: 2
-}
+};
 let cannedMessages = [
 "To enter the raffle, type in !enter name-realm. Please include any special characters - the bot will @ you to tell you that your character hasn’t been found, or that you had an error.",
 "No, there is no bad luck protection.",
 "Like what we’re doing? Donate to our campaign to raise money for Gamers Outreach! https://tiltify.com/+perky-pugs/friendshipdragon2",
 "Interested in learning more about Perky Pugs? Join our Discord! Discord.gg/PerkyPugs", 
 "If you are having trouble entering the raffle, please see the #FriendshipDragon2 channel in the Perky Pugs Discord or DM the Modmail bot for more detailed help. Discord.gg/PerkyPugs"
-]
+];
 let cannedMessageMax = cannedMessages.length;
 let currentMessage = 0;
 let messageFeedEnabled = true;
@@ -196,13 +196,15 @@ function CheckDatabaseForEligibility(winner){
 	//see if they have won on this twitch account before
 	if(global_playerToTwitchNameDictionary[winner] in dataAccess.previousWinnersByTwitchName){
 		//this player has won before on this twitch account
-		SendMessage(MessagePriority.High, `@${global_playerToTwitchNameDictionary[winner]} has won on this twitch account before`);//TODO: don't disclose this to users on launch
+		console.log(`@${global_playerToTwitchNameDictionary[winner]} has won on this twitch account before`);
+		SendMessage(MessagePriority.High, `@${global_playerToTwitchNameDictionary[winner]} is not eligible!`);
 		return false;
 	}
 
 	if(winner in dataAccess.previousWinnersByRealmCharacterCombo){
 		//this player has won before with this specific WOW character
-		SendMessage(MessagePriority.High, `@${winner} has won on this WOW character before`);//TODO: don't disclose this to users on launch
+		console.log(`@${global_playerToTwitchNameDictionary[winner]} has won on this WOW character before`);
+		SendMessage(MessagePriority.High, `@${global_playerToTwitchNameDictionary[winner]} is not eligible!`);
 		return false;
 	}
 	return true;
