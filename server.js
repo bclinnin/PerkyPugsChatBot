@@ -36,7 +36,7 @@ const MessagePriority = {
 	High: 2
 };
 let cannedMessages = [
-"To enter the raffle, type in !enter name-realm. Please include any special characters - the bot will @ you to tell you that your character hasn’t been found, or that you had an error.",
+"When the raffle is open, type !enter name-realm. Please include any special characters - the bot will @ you to tell you that your character hasn’t been found, or that you had an error.",
 "No, there is no bad luck protection.",
 "Like what we’re doing? Donate to our campaign to raise money for Gamers Outreach! https://tiltify.com/+perky-pugs/friendshipdragon2",
 "Interested in learning more about Perky Pugs? Join our Discord! Discord.gg/PerkyPugs", 
