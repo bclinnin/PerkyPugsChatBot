@@ -31,7 +31,7 @@ function GetDatabaseClient(){
   }
 }
 function PopulateGlobalLookups(result){
-  console.log(result.rows)
+  console.log(`re-caching ${result.rowCount} rows`);
   for(var idx in result.rows){
     var currentTwitchName = result.rows[idx].twitchname;
     var currentRealmCharacterCombo = result.rows[idx].realmcharactercombo;
