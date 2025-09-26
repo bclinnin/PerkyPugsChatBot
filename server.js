@@ -1,9 +1,12 @@
 const tmi = require('tmi.js');
 const axios = require('axios');
 const axiosRetry = require('axios-retry');
+dataAccess=require('./dataAccess');
 require('dotenv').config();
 
+dataAccess.dbStartup();
 //~~~~ Globals
+const const_maxLevel = 70;
 var global_BlizzardAuthToken;
 var playerDictionary = {};
 let global_client;
@@ -24,11 +27,24 @@ let messageBufferSuccessfulEnter = [];
 let messageBufferAlreadyEntered = [];
 let messageBufferCanOnlyEnterOnce = [];
 let messageBufferWrongName = [];
+let messageBufferRemix = [];
+let messageBufferMaxLevel = [];
+let cannotEnterBuffer = [];
 const MessagePriority = {
 	Low: 0,
 	Medium: 1,
 	High: 2
-}
+};
+let cannedMessages = [
+"When the raffle is open, type !enter name-realm. Please include any special characters - the bot will @ you to tell you that your character hasn’t been found, or that you had an error.",
+"No, there is no bad luck protection.",
+"Like what we’re doing? Donate to our campaign to raise money for Gamers Outreach! https://tiltify.com/+perky-pugs/friendshipdragon2",
+"Interested in learning more about Perky Pugs? Join our Discord! Discord.gg/PerkyPugs", 
+"If you are having trouble entering the raffle, please see the #FriendshipDragon2 channel in the Perky Pugs Discord or DM the Modmail bot for more detailed help. Discord.gg/PerkyPugs"
+];
+let cannedMessageMax = cannedMessages.length;
+let currentMessage = 0;
+let messageFeedEnabled = true;
 //~~~~ END Globals
 
 //client Connection Startup
@@ -45,6 +61,7 @@ if( !global_client){
 });
 }
 global_client.connect();
+globalChannel = process.env.TWITCH_CHANNEL_NAME;
 
 //Configure axios retry for potential throttling from blizzard
 axiosRetry(axios, { retryDelay: axiosRetry.exponentialDelay, retries: 5, shouldResetTimeout: true, retryCondition: (error)=>{
@@ -60,12 +77,16 @@ setInterval(SendMessageBuffer, 2500, messageBufferSuccessfulEnter, ` you are ent
 setInterval(SendMessageBuffer, 2500, messageBufferAlreadyEntered, ` you are already entered in the current raffle.`);
 setInterval(SendMessageBuffer, 2500, messageBufferCanOnlyEnterOnce, ` you may only enter one character in the raffle.`);
 setInterval(SendMessageBuffer, 2500, messageBufferWrongName, ` I couldn't find that character, please ensure that you are giving character-realm. Character name should include any alt codes for special characters.`);
+setInterval(SendMessageBuffer, 2500, messageBufferRemix, ` You cannot enter with a MOP remix character.  Please use a standard retail character!`);
+setInterval(SendMessageBuffer, 2500, messageBufferMaxLevel, ` The character you entered must be level ${const_maxLevel}!`);
+setInterval(SendMessageBuffer, 2500, cannotEnterBuffer, ` The raffle is not accepting new entrants right now.  Please wait until the next raffle to enter. Thanks!`);
+setInterval(RotateCannedMessages, 120000);
 
 global_client.on('message', (channel, tags, message, self) => {
 	try{
 		if(self || !message.startsWith('!')) return;
 		//map channel to global scope for simplicity
-		globalChannel=channel;
+		//globalChannel=channel;
 	
 		const args = message.slice(1).trim().split(/\s+/);
 		const command = args.shift().toLowerCase();
@@ -100,7 +121,19 @@ global_client.on('message', (channel, tags, message, self) => {
 			case 'help':
 				if(!DoesUserHaveAdminPermissions(tags))return;
 				HandleHelpCommand(args,tags);
-				break;		
+				break;
+			case 'apply':
+				if(!DoesUserHaveAdminPermissions(tags))return;
+				HandleApplyCommand(args,tags);
+				break;			
+			case 'enablefeed':
+				if(!DoesUserHaveAdminPermissions(tags))return;
+				ToggleFeed(true,tags);
+				break;
+			case 'disablefeed':
+				if(!DoesUserHaveAdminPermissions(tags))return;
+				ToggleFeed(false,tags);
+				break;	
 			default:
 				break;								
 		}
@@ -118,7 +151,10 @@ function HandleHelpCommand(args,tags){
 	!openraffle  ||||||  
 	!closeraffle  ||||||  
 	!getwinners  ||||||  
-	!help`;
+	!help  ||||||  
+	!apply   ||||||  
+	!enablefeed   ||||||  
+	!disablefeed   ||||||  `;
 	SendMessage(MessagePriority.High,message);
 }
 
@@ -143,14 +179,9 @@ function HandleCloseRaffleCommand(args,tags){
 function HandleGetWinnersCommand(args,tags){
 	if(isRaffleOpen)return;
 
-	var trackedwinner;
 	Promise.resolve(RequestAuthToken())
 	.then(()=>{return SelectWinnerFromList()})
-	.then((winner)=>{
-		trackedwinner = winner;
-		return FetchPlayerMounts(winner)})
-	.then((playerMountCollection)=>{return FindMountInCollection(playerMountCollection)})
-	.then((doesPlayerHaveMount) => {return DeterminePlayerEligibility(trackedwinner,doesPlayerHaveMount)})
+	.then((winner) => {return DeterminePlayerEligibility(winner)})
 	.then(()=>{
 		if(!ShouldContinueDrawingWinners())return;
 		return HandleGetWinnersCommand(args,tags);
@@ -159,6 +190,25 @@ function HandleGetWinnersCommand(args,tags){
 		console.log(error);
 		SendMessage(MessagePriority.High, `An error was encountered while attempting to determine the winners. Please run !setwinners with the number you still want to draw, then run !getwinners again.`);
 	});
+}
+
+function CheckDatabaseForEligibility(winner){
+	//see if they have won on this twitch account before
+	if(global_playerToTwitchNameDictionary[winner] in dataAccess.previousWinnersByTwitchName){
+		//this player has won before on this twitch account
+		console.log(`@${global_playerToTwitchNameDictionary[winner]} has won on this twitch account before`);
+		SendMessage(MessagePriority.High, `@${global_playerToTwitchNameDictionary[winner]} is not eligible!`);
+		return false;
+	}
+
+	if(winner in dataAccess.previousWinnersByRealmCharacterCombo){
+		//this player has won before with this specific WOW character
+		console.log(`@${global_playerToTwitchNameDictionary[winner]} has won on this WOW character before`);
+		SendMessage(MessagePriority.High, `@${global_playerToTwitchNameDictionary[winner]} is not eligible!`);
+		return false;
+	}
+	return true;
+
 }
 
 function ShouldContinueDrawingWinners(){
@@ -231,7 +281,10 @@ function ValidateAndParseCharacterInfo(args){
 
 function HandleEnterCommand(args,tags){
 	//raffle must be open to allow new players to enter
-	if(!isRaffleOpen)return;
+	if(!isRaffleOpen){
+		cannotEnterBuffer.push(tags.username);
+		return;
+	}
 
 	var charAndRealm = ValidateAndParseCharacterInfo(args);
 	
@@ -277,10 +330,16 @@ function RegisterPlayerForRaffle(characterSummary,realmAndCharacterName,tags){
 
 	var playerFaction = characterSummary['data']['faction']['type'];
 
-	if(characterSummary['data']['level'] != 60){
-		SendMessage(MessagePriority.Low, `@${tags.username}, The character you entered must be level 60!`);//TODO: maybe make this another buffer
+	if(characterSummary['data']['level'] != const_maxLevel){
+		messageBufferMaxLevel.push(tags.username);
 		return;
 	}
+
+	if(characterSummary['data']['is_remix'] == true){
+		messageBufferRemix.push(tags.username);
+		return;
+	}
+
 	if(currentRaffleList.includes(realmAndCharacterName)){
 		console.log('race condition met of player entering multiple times quickly');
 		return;
@@ -388,21 +447,83 @@ function FindMountInCollection(playerMountCollection){
 	return false;
 }
 
-function DeterminePlayerEligibility(selectedWinner,doesPlayerHaveMount){
+async function DeterminePlayerEligibility(selectedWinner){
 	console.log('determining if player can win');
 	if(selectedWinner == null){
 		console.log('no valid player was sent in to determine eligibility');
 		throw new Error('no valid player was sent in to determine eligibility');
 	}
-	if(doesPlayerHaveMount){
-		SendMessage(MessagePriority.High, `@${global_playerToTwitchNameDictionary[selectedWinner]} already has the mount and is NOT eligible for a carry!`);
+	//check the quick stuff first and short circuit out if this person isn't eligible
+	if(!CheckDatabaseForEligibility(selectedWinner))return;
+
+	//playerinfo comes in the form character_realm here right now
+	playerInfo = selectedWinner.toLowerCase().split("_");
+
+	//playerInfo[1] contains the realm
+	//playerInfo[0] contains the character name
+	///profile/wow/character/{realmSlug}/{characterName}/encounters/raids
+	var getURL = 'https://us.api.blizzard.com/profile/wow/character/'+playerInfo[1]+'/'+playerInfo[0]+'/encounters/raids';
+	var apiResponse;
+	await axios.get(getURL,{params:{namespace : 'profile-us',
+		locale : 'en_US',
+		access_token : global_BlizzardAuthToken},
+		timeout : process.env.API_TIMEOUT_MS})
+	.then((result)=>apiResponse = result['data']['expansions']);
+	
+	//if the player has never killed a raid boss, this'll be null, so check
+	if(apiResponse == undefined){
+		console.log("player has never killed a raid boss");
 	}
 	else{
-		SendMessage(MessagePriority.High, `@${global_playerToTwitchNameDictionary[selectedWinner]} has won a carry with character {{${selectedWinner.replace('_','-')}}} on ${global_playerFactionDictionary[selectedWinner]} ! ${modList}`);
-		global_currentWinnerCount++;
+		for(var expansionTopLevel of apiResponse){
+			if(expansionTopLevel.expansion.id == 503){ // find season 3
+				if(HasPlayerKilledFyrakk(expansionTopLevel.instances)){
+					console.log(`@${global_playerToTwitchNameDictionary[selectedWinner]} already has the appearance and is NOT eligible for a carry!`);
+					SendMessage(MessagePriority.High, `@${global_playerToTwitchNameDictionary[selectedWinner]} is not eligible!`);
+					return;
+				};
+				
+			}
+			if(expansionTopLevel.expansion.id == 505){ // find season 4
+				if(HasPlayerKilledFyrakk(expansionTopLevel.instances)){
+					console.log(`@${global_playerToTwitchNameDictionary[selectedWinner]} already has the appearance and is NOT eligible for a carry!`);
+					SendMessage(MessagePriority.High, `@${global_playerToTwitchNameDictionary[selectedWinner]} is not eligible!`);
+					return;
+				};
+			}
+		}
 	}
+	
+	dataAccess.PersistNewWinner(global_playerToTwitchNameDictionary[selectedWinner],playerInfo[1],playerInfo[0],selectedWinner);
+	dataAccess.AddNameToTwitchWinnersList(global_playerToTwitchNameDictionary[selectedWinner]);
+	dataAccess.AddNameToCharacterWinnersList(selectedWinner);
+	SendMessage(MessagePriority.High, `@${global_playerToTwitchNameDictionary[selectedWinner]} has won a carry with character {{  ${selectedWinner.replace('_','-')}  }} on ${global_playerFactionDictionary[selectedWinner]} ! ${modList}`);
+	global_currentWinnerCount++;
 }
 
+function HasPlayerKilledFyrakk(JsonBlob){
+	//enumerate the instances to find Amirdrassil
+	for(var instance of JsonBlob){
+		//check for Amirdrassil raid ID
+		if(instance.instance.id == 1207){
+			console.log("found s3 amirdrassil");					
+			for(var difficulty of instance.modes){
+				if(difficulty.difficulty.name == 'Heroic'){
+					for(var encounter of difficulty.progress.encounters){
+						//Fyrakk encounter id
+						if(encounter.encounter.id == 2519){
+							if(encounter.completed_count >0){
+								console.log("this player has killed Fyrakk on heroic before");
+								return true;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return false;
+}
 function DoesUserHaveAdminPermissions(tags){
 	if(tags == null)return false;
 	if(tags.badges == null)return false;
@@ -462,4 +583,34 @@ function SendMessageBuffer(buffer,message){
 		global_client.say(globalChannel, userListString+message);
 		console.log('messages in current time window: '+messagesInThrottleWindow);
 	}
+}
+
+function RotateCannedMessages(){
+	//only send out canned messages if there isn't an ongoing raffle
+	if(isRaffleOpen)return;
+
+	//check the global enable/disable toggle
+	if(!messageFeedEnabled)return;
+
+	//only send out canned message if we have room 
+	if(!CanSendMessage)return;
+
+	//check if we are out of bounds of messages
+	if(currentMessage > (cannedMessageMax-1)){
+		currentMessage = 0;
+	}
+	global_client.say(globalChannel, cannedMessages[currentMessage]);
+	currentMessage++;
+}
+
+function HandleApplyCommand(){
+	//only send out canned message if we have room 
+	if(!CanSendMessage)return;
+
+	global_client.say(globalChannel, `Carrier Application: https://forms.gle/Pn2u8ufDH67TbjmW8`);
+}
+
+function ToggleFeed(enableOrDisable){
+	messageFeedEnabled = enableOrDisable;
+	global_client.say(globalChannel, `messageFeed set to `+enableOrDisable);
 }
