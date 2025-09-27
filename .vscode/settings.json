@@ -1,0 +1,26 @@
+{
+  "javascript.preferences.includePackageJsonAutoImports": "auto",
+  "typescript.preferences.includePackageJsonAutoImports": "auto",
+  "javascript.suggest.autoImports": true,
+  "typescript.suggest.autoImports": true,
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "javascript.suggest.completeFunctionCalls": true,
+  "typescript.suggest.completeFunctionCalls": true,
+  "javascript.suggest.names": true,
+  "typescript.suggest.names": true,
+  "javascript.validate.enable": true,
+  "typescript.validate.enable": true,
+  "files.associations": {
+    "*.js": "javascript"
+  },
+  "eslint.enable": true,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact"
+  ],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  }
+}
+
