@@ -33,8 +33,10 @@ describe('WoWApiService', () => {
                 expect.objectContaining({
                     params: expect.objectContaining({
                         namespace: 'profile-us',
-                        locale: 'en_US',
-                        access_token: 'test_token'
+                        locale: 'en_US'
+                    }),
+                    headers: expect.objectContaining({
+                        'Authorization': 'Bearer test_token'
                     })
                 })
             );
@@ -47,13 +49,13 @@ describe('WoWApiService', () => {
             const mockResponse = { data: { mounts: [] } };
             axios.get.mockResolvedValue(mockResponse);
 
-            await wowApiService.fetchPlayerMounts('character_realm');
+            await wowApiService.fetchPlayerMounts('realm_character');
 
             expect(axios.get).toHaveBeenCalledWith(
                 'https://us.api.blizzard.com/profile/wow/character/realm/character/collections/mounts',
                 expect.objectContaining({
-                    params: expect.objectContaining({
-                        access_token: 'test_token'
+                    headers: expect.objectContaining({
+                        'Authorization': 'Bearer test_token'
                     })
                 })
             );
@@ -70,13 +72,13 @@ describe('WoWApiService', () => {
             const mockResponse = { data: { expansions: [] } };
             axios.get.mockResolvedValue(mockResponse);
 
-            await wowApiService.fetchPlayerRaids('character_realm');
+            await wowApiService.fetchPlayerRaids('realm_character');
 
             expect(axios.get).toHaveBeenCalledWith(
                 'https://us.api.blizzard.com/profile/wow/character/realm/character/encounters/raids',
                 expect.objectContaining({
-                    params: expect.objectContaining({
-                        access_token: 'test_token'
+                    headers: expect.objectContaining({
+                        'Authorization': 'Bearer test_token'
                     })
                 })
             );
@@ -87,153 +89,7 @@ describe('WoWApiService', () => {
         });
     });
 
-    describe('findMountInCollection', () => {
-        it('should return true when mount is found', () => {
-            const mountCollection = {
-                data: {
-                    mounts: [
-                        { mount: { id: '123' } },
-                        { mount: { id: process.env.AOTC_MOUNT_ID } }
-                    ]
-                }
-            };
 
-            const result = wowApiService.findMountInCollection(mountCollection);
-            expect(result).toBe(true);
-        });
-
-        it('should return false when mount is not found', () => {
-            const mountCollection = {
-                data: {
-                    mounts: [
-                        { mount: { id: '123' } },
-                        { mount: { id: '456' } }
-                    ]
-                }
-            };
-
-            const result = wowApiService.findMountInCollection(mountCollection);
-            expect(result).toBe(false);
-        });
-
-        it('should throw error for null collection', () => {
-            expect(() => wowApiService.findMountInCollection(null)).toThrow(ERROR_MESSAGES.EMPTY_MOUNT_COLLECTION);
-        });
-    });
-
-    describe('hasPlayerKilledFyrakk', () => {
-        it('should return true when player has killed Fyrakk', () => {
-            const raidData = [
-                {
-                    instance: { id: GAME.AMIRDRASSIL_RAID_ID }, // Amirdrassil
-                    modes: [
-                        {
-                            difficulty: { name: GAME.DIFFICULTY_HEROIC },
-                            progress: {
-                                encounters: [
-                                    {
-                                        encounter: { id: GAME.FYRAKK_ENCOUNTER_ID }, // Fyrakk
-                                        completed_count: 1
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ];
-
-            const result = wowApiService.hasPlayerKilledFyrakk(raidData);
-            expect(result).toBe(true);
-        });
-
-        it('should return false when player has not killed Fyrakk', () => {
-            const raidData = [
-                {
-                    instance: { id: GAME.AMIRDRASSIL_RAID_ID },
-                    modes: [
-                        {
-                            difficulty: { name: GAME.DIFFICULTY_HEROIC },
-                            progress: {
-                                encounters: [
-                                    {
-                                        encounter: { id: GAME.FYRAKK_ENCOUNTER_ID },
-                                        completed_count: 0
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ];
-
-            const result = wowApiService.hasPlayerKilledFyrakk(raidData);
-            expect(result).toBe(false);
-        });
-
-        it('should return false for wrong instance', () => {
-            const raidData = [
-                {
-                    instance: { id: 999 }, // Different instance ID
-                    modes: [
-                        {
-                            difficulty: { name: GAME.DIFFICULTY_HEROIC },
-                            progress: {
-                                encounters: [
-                                    {
-                                        encounter: { id: GAME.FYRAKK_ENCOUNTER_ID },
-                                        completed_count: 1
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ];
-
-            const result = wowApiService.hasPlayerKilledFyrakk(raidData);
-            expect(result).toBe(false);
-        });
-    });
-
-    describe('validateCharacterInfo', () => {
-        it('should return valid for correct character', () => {
-            const characterSummary = {
-                data: {
-                    level: GAME.MAX_LEVEL,
-                    is_remix: false
-                }
-            };
-
-            const result = wowApiService.validateCharacterInfo(characterSummary);
-            expect(result.valid).toBe(true);
-        });
-
-        it('should return invalid for wrong level', () => {
-            const characterSummary = {
-                data: {
-                    level: GAME.MAX_LEVEL - 10, // Test with level below max
-                    is_remix: false
-                }
-            };
-
-            const result = wowApiService.validateCharacterInfo(characterSummary);
-            expect(result.valid).toBe(false);
-            expect(result.reason).toBe(VALIDATION_REASONS.MAX_LEVEL);
-        });
-
-        it('should return invalid for remix character', () => {
-            const characterSummary = {
-                data: {
-                    level: GAME.MAX_LEVEL,
-                    is_remix: true
-                }
-            };
-
-            const result = wowApiService.validateCharacterInfo(characterSummary);
-            expect(result.valid).toBe(false);
-            expect(result.reason).toBe(VALIDATION_REASONS.REMIX);
-        });
-    });
 
     describe('parseCharacterAndRealm', () => {
         it('should parse character and realm correctly', () => {

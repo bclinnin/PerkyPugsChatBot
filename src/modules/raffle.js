@@ -46,7 +46,7 @@ class RaffleService {
         // Raffle must still be open to register the player
         if (!this.state.isRaffleOpen) {return;}
 
-        const validation = this.wowApiService.validateCharacterInfo(characterSummary);
+        const validation = this.validateCharacterInfo(characterSummary);
         if (!validation.valid) {
             if (validation.reason === VALIDATION_REASONS.MAX_LEVEL) {
                 this.messageService.addMaxLevel(tags.username);
@@ -83,23 +83,24 @@ class RaffleService {
         try {
             const playerInfoArray = selectedWinner.toLowerCase().split('_');
             const apiResponse = await this.wowApiService.fetchPlayerRaids(selectedWinner);
-            const raidData = apiResponse.data.expansions;
+            const expansions = apiResponse.data.expansions;
 
             // If the player has never killed a raid boss, this'll be null, so check
-            if (raidData === undefined) {
+            if (expansions === undefined) {
                 console.log('Player has never killed a raid boss');
             } else {
-                for (const expansionTopLevel of raidData) {
-                    const isSeason3 = expansionTopLevel.expansion.id === GAME.SEASON_3_EXPANSION_ID;
-                    const isSeason4 = expansionTopLevel.expansion.id === GAME.SEASON_4_EXPANSION_ID;
-                    
-                    if (!isSeason3 && !isSeason4) {continue;}
-                    
-                    if (this.wowApiService.hasPlayerKilledFyrakk(expansionTopLevel.instances)) {
-                        console.log(`@${this.state.playerToTwitchNameDictionary[selectedWinner]} already has the appearance and is NOT eligible for a carry!`);
-                        this.messageService.sendMessage(MESSAGE_PRIORITY.High, `@${this.state.playerToTwitchNameDictionary[selectedWinner]} is not eligible!`);
-                        return;
+                // Flatten all instances from all expansions into a single array
+                const allInstances = [];
+                expansions.forEach(expansion => {
+                    if (expansion.instances) {
+                        allInstances.push(...expansion.instances);
                     }
+                });
+                
+                if (this.hasPlayerKilledDimensius(allInstances)) {
+                    console.log(`@${this.state.playerToTwitchNameDictionary[selectedWinner]} already has the appearance and is NOT eligible for a carry!`);
+                    this.messageService.sendMessage(MESSAGE_PRIORITY.High, `@${this.state.playerToTwitchNameDictionary[selectedWinner]} is not eligible!`);
+                    return;
                 }
             }
 
@@ -132,6 +133,67 @@ class RaffleService {
             return false;
         }
         return true;
+    }
+
+    validateCharacterInfo(characterSummary) {
+        if (characterSummary.data.level !== GAME.MAX_LEVEL) {
+            return { valid: false, reason: VALIDATION_REASONS.MAX_LEVEL };
+        }
+
+        if (characterSummary.data.is_remix === true) {
+            return { valid: false, reason: VALIDATION_REASONS.REMIX };
+        }
+
+        return { valid: true };
+    }
+
+    hasPlayerKilledDimensius(raidData) {
+        // Find Manaforge Omega instance
+        const manaforgeInstance = raidData.find(instance => 
+            instance.instance.id === GAME.MANAFORGE_OMEGA_RAID_ID
+        );
+        
+        if (!manaforgeInstance) {
+            return false;
+        }
+        
+        console.log('Found Manaforge Omega');
+        
+        // Find Heroic difficulty mode
+        const heroicMode = manaforgeInstance.modes.find(mode => 
+            mode.difficulty.name === GAME.DIFFICULTY_HEROIC
+        );
+        
+        if (!heroicMode) {
+            return false;
+        }
+        
+        // Find Dimensius encounter
+        const dimensiusEncounter = heroicMode.progress.encounters.find(encounter => 
+            encounter.encounter.id === GAME.DIMENSIUS_ENCOUNTER_ID
+        );
+        
+        if (dimensiusEncounter && dimensiusEncounter.completed_count > 0) {
+            console.log('This player has killed Dimensius on heroic before');
+            return true;
+        }
+        
+        return false;
+    }
+
+    findMountInCollection(playerMountCollection) {
+        console.log('Parsing mounts');
+        if (!playerMountCollection) {
+            console.log(ERROR_MESSAGES.EMPTY_MOUNT_COLLECTION);
+            throw new Error(ERROR_MESSAGES.EMPTY_MOUNT_COLLECTION);
+        }
+
+        for (const mount of playerMountCollection.data.mounts) {
+            if (mount.mount.id === process.env.AOTC_MOUNT_ID) {
+                return true;
+            }
+        }
+        return false;
     }
 
     shouldContinueDrawingWinners() {

@@ -156,6 +156,27 @@ describe('PermissionService', () => {
             // Restore original value
             process.env.MOD_LIST = originalModList;
         });
+
+        it('should return true for user in custom mod list even without badges', () => {
+            // Mock the environment variable
+            const originalModList = process.env.MOD_LIST;
+            process.env.MOD_LIST = 'moduser1,moduser2,moduser3';
+
+            // Create new service instance with updated environment
+            const testPermissionService = new PermissionService();
+
+            const tags = {
+                // No badges property at all
+                mod: false,
+                username: 'moduser2'
+            };
+
+            const result = testPermissionService.doesUserHaveAdminPermissions(tags);
+            expect(result).toBe(true);
+
+            // Restore original value
+            process.env.MOD_LIST = originalModList;
+        });
     });
 
     describe('canTwitchAccountEnterInRaffle', () => {

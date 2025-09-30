@@ -14,7 +14,7 @@ const BUFFER_MESSAGES = {
     ALREADY_ENTERED: ' you are already entered in the current raffle.',
     CAN_ONLY_ENTER_ONCE: ' you may only enter one character in the raffle.',
     WRONG_NAME: ' I couldn\'t find that character, please ensure that you are giving character-realm. Character name should include any alt codes for special characters.',
-    REMIX: ' You cannot enter with a MOP remix character. Please use a standard retail character!',
+    REMIX: ' You cannot enter with a remix character. Please use a standard retail character!',
     MAX_LEVEL: ' The character you entered must be level 70!',
     CANNOT_ENTER: ' The raffle is not accepting new entrants right now. Please wait until the next raffle to enter. Thanks!'
 };

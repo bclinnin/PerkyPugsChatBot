@@ -1,0 +1,2562 @@
+{
+  "_links": {
+    "self": {
+      "href": "https://us.api.blizzard.com/profile/wow/character/thrall/xtresneaky/encounters/raids?namespace=profile-us"
+    }
+  },
+  "character": {
+    "key": {
+      "href": "https://us.api.blizzard.com/profile/wow/character/thrall/xtresneaky?namespace=profile-us"
+    },
+    "name": "Xtresneaky",
+    "id": 208391204,
+    "realm": {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/realm/1263?namespace=dynamic-us"
+      },
+      "name": "Thrall",
+      "id": 1263,
+      "slug": "thrall"
+    }
+  },
+  "expansions": [
+    {
+      "expansion": {
+        "key": {
+          "href": "https://us.api.blizzard.com/data/wow/journal-expansion/72?namespace=static-11.2.0_62213-us"
+        },
+        "name": "Wrath of the Lich King",
+        "id": 72
+      },
+      "instances": [
+        {
+          "instance": {
+            "key": {
+              "href": "https://us.api.blizzard.com/data/wow/journal-instance/760?namespace=static-11.2.0_62213-us"
+            },
+            "name": "Onyxia's Lair",
+            "id": 760
+          },
+          "modes": [
+            {
+              "difficulty": {
+                "type": "LEGACY_10_MAN",
+                "name": "10 Player"
+              },
+              "status": {
+                "type": "COMPLETE",
+                "name": "Complete"
+              },
+              "progress": {
+                "completed_count": 1,
+                "total_count": 1,
+                "encounters": [
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/1651?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Onyxia",
+                      "id": 1651
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1683315849000
+                  }
+                ]
+              }
+            },
+            {
+              "difficulty": {
+                "type": "LEGACY_25_MAN",
+                "name": "25 Player"
+              },
+              "status": {
+                "type": "COMPLETE",
+                "name": "Complete"
+              },
+              "progress": {
+                "completed_count": 1,
+                "total_count": 1,
+                "encounters": [
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/1651?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Onyxia",
+                      "id": 1651
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1683315849000
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "expansion": {
+        "key": {
+          "href": "https://us.api.blizzard.com/data/wow/journal-expansion/396?namespace=static-11.2.0_62213-us"
+        },
+        "name": "Battle for Azeroth",
+        "id": 396
+      },
+      "instances": [
+        {
+          "instance": {
+            "key": {
+              "href": "https://us.api.blizzard.com/data/wow/journal-instance/1176?namespace=static-11.2.0_62213-us"
+            },
+            "name": "Battle of Dazar'alor",
+            "id": 1176
+          },
+          "modes": [
+            {
+              "difficulty": {
+                "type": "NORMAL",
+                "name": "Normal"
+              },
+              "status": {
+                "type": "IN_PROGRESS",
+                "name": "In Progress"
+              },
+              "progress": {
+                "completed_count": 1,
+                "total_count": 9,
+                "encounters": [
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2334?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "High Tinker Mekkatorque",
+                      "id": 2334
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1644889552000
+                  }
+                ]
+              }
+            },
+            {
+              "difficulty": {
+                "type": "HEROIC",
+                "name": "Heroic"
+              },
+              "status": {
+                "type": "IN_PROGRESS",
+                "name": "In Progress"
+              },
+              "progress": {
+                "completed_count": 1,
+                "total_count": 9,
+                "encounters": [
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2334?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "High Tinker Mekkatorque",
+                      "id": 2334
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1644889877000
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "expansion": {
+        "key": {
+          "href": "https://us.api.blizzard.com/data/wow/journal-expansion/499?namespace=static-11.2.0_62213-us"
+        },
+        "name": "Shadowlands",
+        "id": 499
+      },
+      "instances": [
+        {
+          "instance": {
+            "key": {
+              "href": "https://us.api.blizzard.com/data/wow/journal-instance/1190?namespace=static-11.2.0_62213-us"
+            },
+            "name": "Castle Nathria",
+            "id": 1190
+          },
+          "modes": [
+            {
+              "difficulty": {
+                "type": "LFR",
+                "name": "Raid Finder"
+              },
+              "status": {
+                "type": "IN_PROGRESS",
+                "name": "In Progress"
+              },
+              "progress": {
+                "completed_count": 1,
+                "total_count": 10,
+                "encounters": [
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2424?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Sire Denathrius",
+                      "id": 2424
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1647983568000
+                  }
+                ]
+              }
+            },
+            {
+              "difficulty": {
+                "type": "NORMAL",
+                "name": "Normal"
+              },
+              "status": {
+                "type": "COMPLETE",
+                "name": "Complete"
+              },
+              "progress": {
+                "completed_count": 10,
+                "total_count": 10,
+                "encounters": [
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2393?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Shriekwing",
+                      "id": 2393
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1659833032000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2429?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Huntsman Altimor",
+                      "id": 2429
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1659833510000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2422?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Sun King's Salvation",
+                      "id": 2422
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1659836136000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2418?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Artificer Xy'mox",
+                      "id": 2418
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1659835423000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2428?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Hungering Destroyer",
+                      "id": 2428
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1659833969000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2420?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Lady Inerva Darkvein",
+                      "id": 2420
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1659834380000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2426?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "The Council of Blood",
+                      "id": 2426
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1659836821000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2394?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Sludgefist",
+                      "id": 2394
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1659837323000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2425?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Stone Legion Generals",
+                      "id": 2425
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1659838035000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2424?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Sire Denathrius",
+                      "id": 2424
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1659838885000
+                  }
+                ]
+              }
+            },
+            {
+              "difficulty": {
+                "type": "HEROIC",
+                "name": "Heroic"
+              },
+              "status": {
+                "type": "COMPLETE",
+                "name": "Complete"
+              },
+              "progress": {
+                "completed_count": 10,
+                "total_count": 10,
+                "encounters": [
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2393?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Shriekwing",
+                      "id": 2393
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1661301308000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2429?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Huntsman Altimor",
+                      "id": 2429
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1661301757000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2422?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Sun King's Salvation",
+                      "id": 2422
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1661303790000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2418?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Artificer Xy'mox",
+                      "id": 2418
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1661303278000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2428?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Hungering Destroyer",
+                      "id": 2428
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1661302201000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2420?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Lady Inerva Darkvein",
+                      "id": 2420
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1661302535000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2426?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "The Council of Blood",
+                      "id": 2426
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1661304414000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2394?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Sludgefist",
+                      "id": 2394
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1661304831000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2425?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Stone Legion Generals",
+                      "id": 2425
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1661305343000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2424?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Sire Denathrius",
+                      "id": 2424
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1661307634000
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "instance": {
+            "key": {
+              "href": "https://us.api.blizzard.com/data/wow/journal-instance/1193?namespace=static-11.2.0_62213-us"
+            },
+            "name": "Sanctum of Domination",
+            "id": 1193
+          },
+          "modes": [
+            {
+              "difficulty": {
+                "type": "NORMAL",
+                "name": "Normal"
+              },
+              "status": {
+                "type": "COMPLETE",
+                "name": "Complete"
+              },
+              "progress": {
+                "completed_count": 10,
+                "total_count": 10,
+                "encounters": [
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2435?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "The Tarragrue",
+                      "id": 2435
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1660437619000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2442?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "The Eye of the Jailer",
+                      "id": 2442
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1660438339000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2439?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "The Nine",
+                      "id": 2439
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1660439005000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2444?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Remnant of Ner'zhul",
+                      "id": 2444
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1660439668000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2445?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Soulrender Dormazain",
+                      "id": 2445
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1660440118000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2443?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Painsmith Raznal",
+                      "id": 2443
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1660440652000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2446?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Guardian of the First Ones",
+                      "id": 2446
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1660441148000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2447?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Fatescribe Roh-Kalo",
+                      "id": 2447
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1660441968000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2440?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Kel'Thuzad",
+                      "id": 2440
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1660442602000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2441?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Sylvanas Windrunner",
+                      "id": 2441
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1660443752000
+                  }
+                ]
+              }
+            },
+            {
+              "difficulty": {
+                "type": "HEROIC",
+                "name": "Heroic"
+              },
+              "status": {
+                "type": "COMPLETE",
+                "name": "Complete"
+              },
+              "progress": {
+                "completed_count": 10,
+                "total_count": 10,
+                "encounters": [
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2435?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "The Tarragrue",
+                      "id": 2435
+                    },
+                    "completed_count": 2,
+                    "last_kill_timestamp": 1661906108000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2442?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "The Eye of the Jailer",
+                      "id": 2442
+                    },
+                    "completed_count": 2,
+                    "last_kill_timestamp": 1661906641000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2439?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "The Nine",
+                      "id": 2439
+                    },
+                    "completed_count": 2,
+                    "last_kill_timestamp": 1661907117000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2444?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Remnant of Ner'zhul",
+                      "id": 2444
+                    },
+                    "completed_count": 2,
+                    "last_kill_timestamp": 1661907846000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2445?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Soulrender Dormazain",
+                      "id": 2445
+                    },
+                    "completed_count": 2,
+                    "last_kill_timestamp": 1661908281000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2443?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Painsmith Raznal",
+                      "id": 2443
+                    },
+                    "completed_count": 2,
+                    "last_kill_timestamp": 1661908870000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2446?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Guardian of the First Ones",
+                      "id": 2446
+                    },
+                    "completed_count": 2,
+                    "last_kill_timestamp": 1661909397000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2447?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Fatescribe Roh-Kalo",
+                      "id": 2447
+                    },
+                    "completed_count": 2,
+                    "last_kill_timestamp": 1661910395000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2440?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Kel'Thuzad",
+                      "id": 2440
+                    },
+                    "completed_count": 2,
+                    "last_kill_timestamp": 1661910941000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2441?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Sylvanas Windrunner",
+                      "id": 2441
+                    },
+                    "completed_count": 2,
+                    "last_kill_timestamp": 1661912480000
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "instance": {
+            "key": {
+              "href": "https://us.api.blizzard.com/data/wow/journal-instance/1195?namespace=static-11.2.0_62213-us"
+            },
+            "name": "Sepulcher of the First Ones",
+            "id": 1195
+          },
+          "modes": [
+            {
+              "difficulty": {
+                "type": "LFR",
+                "name": "Raid Finder"
+              },
+              "status": {
+                "type": "COMPLETE",
+                "name": "Complete"
+              },
+              "progress": {
+                "completed_count": 11,
+                "total_count": 11,
+                "encounters": [
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2458?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Vigilant Guardian",
+                      "id": 2458
+                    },
+                    "completed_count": 2,
+                    "last_kill_timestamp": 1660761393000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2465?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Skolex, the Insatiable Ravener",
+                      "id": 2465
+                    },
+                    "completed_count": 3,
+                    "last_kill_timestamp": 1660762168000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2470?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Artificer Xy'mox",
+                      "id": 2470
+                    },
+                    "completed_count": 3,
+                    "last_kill_timestamp": 1660762774000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2459?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Dausegne, the Fallen Oracle",
+                      "id": 2459
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1660765645000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2460?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Prototype Pantheon",
+                      "id": 2460
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1660766078000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2461?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Lihuvim, Principal Architect",
+                      "id": 2461
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1660766638000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2463?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Halondrus the Reclaimer",
+                      "id": 2463
+                    },
+                    "completed_count": 3,
+                    "last_kill_timestamp": 1660763357000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2469?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Anduin Wrynn",
+                      "id": 2469
+                    },
+                    "completed_count": 2,
+                    "last_kill_timestamp": 1660768213000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2457?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Lords of Dread",
+                      "id": 2457
+                    },
+                    "completed_count": 2,
+                    "last_kill_timestamp": 1660768768000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2467?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Rygelon",
+                      "id": 2467
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1649264494000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2464?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "The Jailer",
+                      "id": 2464
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1660767577000
+                  }
+                ]
+              }
+            },
+            {
+              "difficulty": {
+                "type": "NORMAL",
+                "name": "Normal"
+              },
+              "status": {
+                "type": "COMPLETE",
+                "name": "Complete"
+              },
+              "progress": {
+                "completed_count": 11,
+                "total_count": 11,
+                "encounters": [
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2458?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Vigilant Guardian",
+                      "id": 2458
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1648341568000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2465?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Skolex, the Insatiable Ravener",
+                      "id": 2465
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1648344786000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2470?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Artificer Xy'mox",
+                      "id": 2470
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1648344045000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2459?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Dausegne, the Fallen Oracle",
+                      "id": 2459
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1648342372000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2460?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Prototype Pantheon",
+                      "id": 2460
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1648342921000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2461?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Lihuvim, Principal Architect",
+                      "id": 2461
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1649551479000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2463?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Halondrus the Reclaimer",
+                      "id": 2463
+                    },
+                    "completed_count": 3,
+                    "last_kill_timestamp": 1649552119000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2469?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Anduin Wrynn",
+                      "id": 2469
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1649553502000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2457?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Lords of Dread",
+                      "id": 2457
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1649555240000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2467?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Rygelon",
+                      "id": 2467
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1649554245000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2464?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "The Jailer",
+                      "id": 2464
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1649556977000
+                  }
+                ]
+              }
+            },
+            {
+              "difficulty": {
+                "type": "HEROIC",
+                "name": "Heroic"
+              },
+              "status": {
+                "type": "COMPLETE",
+                "name": "Complete"
+              },
+              "progress": {
+                "completed_count": 11,
+                "total_count": 11,
+                "encounters": [
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2458?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Vigilant Guardian",
+                      "id": 2458
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1662511712000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2465?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Skolex, the Insatiable Ravener",
+                      "id": 2465
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1662513756000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2470?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Artificer Xy'mox",
+                      "id": 2470
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1662514171000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2459?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Dausegne, the Fallen Oracle",
+                      "id": 2459
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1662512345000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2460?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Prototype Pantheon",
+                      "id": 2460
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1662512843000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2461?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Lihuvim, Principal Architect",
+                      "id": 2461
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1662513216000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2463?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Halondrus the Reclaimer",
+                      "id": 2463
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1662514616000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2469?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Anduin Wrynn",
+                      "id": 2469
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1662515478000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2457?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Lords of Dread",
+                      "id": 2457
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1662516205000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2467?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Rygelon",
+                      "id": 2467
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1662517338000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2464?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "The Jailer",
+                      "id": 2464
+                    },
+                    "completed_count": 3,
+                    "last_kill_timestamp": 1662518118000
+                  }
+                ]
+              }
+            },
+            {
+              "difficulty": {
+                "type": "MYTHIC",
+                "name": "Mythic"
+              },
+              "status": {
+                "type": "IN_PROGRESS",
+                "name": "In Progress"
+              },
+              "progress": {
+                "completed_count": 3,
+                "total_count": 11,
+                "encounters": [
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2465?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Skolex, the Insatiable Ravener",
+                      "id": 2465
+                    },
+                    "completed_count": 5,
+                    "last_kill_timestamp": 1653446183000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2470?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Artificer Xy'mox",
+                      "id": 2470
+                    },
+                    "completed_count": 4,
+                    "last_kill_timestamp": 1653445417000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2463?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Halondrus the Reclaimer",
+                      "id": 2463
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1653534552000
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "expansion": {
+        "key": {
+          "href": "https://us.api.blizzard.com/data/wow/journal-expansion/503?namespace=static-11.2.0_62213-us"
+        },
+        "name": "Dragonflight",
+        "id": 503
+      },
+      "instances": [
+        {
+          "instance": {
+            "key": {
+              "href": "https://us.api.blizzard.com/data/wow/journal-instance/1200?namespace=static-11.2.0_62213-us"
+            },
+            "name": "Vault of the Incarnates",
+            "id": 1200
+          },
+          "modes": [
+            {
+              "difficulty": {
+                "type": "LFR",
+                "name": "Raid Finder"
+              },
+              "status": {
+                "type": "IN_PROGRESS",
+                "name": "In Progress"
+              },
+              "progress": {
+                "completed_count": 3,
+                "total_count": 8,
+                "encounters": [
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2486?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "The Primal Council",
+                      "id": 2486
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1674252687000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2502?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Dathea, Ascended",
+                      "id": 2502
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1674253198000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2491?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Kurog Grimtotem",
+                      "id": 2491
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1674253710000
+                  }
+                ]
+              }
+            },
+            {
+              "difficulty": {
+                "type": "NORMAL",
+                "name": "Normal"
+              },
+              "status": {
+                "type": "COMPLETE",
+                "name": "Complete"
+              },
+              "progress": {
+                "completed_count": 8,
+                "total_count": 8,
+                "encounters": [
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2480?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Eranog",
+                      "id": 2480
+                    },
+                    "completed_count": 2,
+                    "last_kill_timestamp": 1676166442000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2500?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Terros",
+                      "id": 2500
+                    },
+                    "completed_count": 2,
+                    "last_kill_timestamp": 1676168985000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2486?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "The Primal Council",
+                      "id": 2486
+                    },
+                    "completed_count": 2,
+                    "last_kill_timestamp": 1676167112000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2482?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Sennarth, the Cold Breath",
+                      "id": 2482
+                    },
+                    "completed_count": 2,
+                    "last_kill_timestamp": 1676169718000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2502?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Dathea, Ascended",
+                      "id": 2502
+                    },
+                    "completed_count": 2,
+                    "last_kill_timestamp": 1676167942000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2491?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Kurog Grimtotem",
+                      "id": 2491
+                    },
+                    "completed_count": 2,
+                    "last_kill_timestamp": 1676170683000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2493?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Broodkeeper Diurna",
+                      "id": 2493
+                    },
+                    "completed_count": 2,
+                    "last_kill_timestamp": 1676171442000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2499?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Raszageth the Storm-Eater",
+                      "id": 2499
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1674961548000
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "instance": {
+            "key": {
+              "href": "https://us.api.blizzard.com/data/wow/journal-instance/1207?namespace=static-11.2.0_62213-us"
+            },
+            "name": "Amirdrassil, the Dream's Hope",
+            "id": 1207
+          },
+          "modes": [
+            {
+              "difficulty": {
+                "type": "LFR",
+                "name": "Raid Finder"
+              },
+              "status": {
+                "type": "IN_PROGRESS",
+                "name": "In Progress"
+              },
+              "progress": {
+                "completed_count": 3,
+                "total_count": 9,
+                "encounters": [
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2564?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Gnarlroot",
+                      "id": 2564
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1722208743000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2554?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Igira the Cruel",
+                      "id": 2554
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1722208988000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2563?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Smolderon",
+                      "id": 2563
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1722209289000
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "expansion": {
+        "key": {
+          "href": "https://us.api.blizzard.com/data/wow/journal-expansion/514?namespace=static-11.2.0_62213-us"
+        },
+        "name": "The War Within",
+        "id": 514
+      },
+      "instances": [
+        {
+          "instance": {
+            "key": {
+              "href": "https://us.api.blizzard.com/data/wow/journal-instance/1296?namespace=static-11.2.0_62213-us"
+            },
+            "name": "Liberation of Undermine",
+            "id": 1296
+          },
+          "modes": [
+            {
+              "difficulty": {
+                "type": "LFR",
+                "name": "Raid Finder"
+              },
+              "status": {
+                "type": "COMPLETE",
+                "name": "Complete"
+              },
+              "progress": {
+                "completed_count": 8,
+                "total_count": 8,
+                "encounters": [
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2639?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Vexie and the Geargrinders",
+                      "id": 2639
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1754179288000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2640?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Cauldron of Carnage",
+                      "id": 2640
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1752681117000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2641?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Rik Reverb",
+                      "id": 2641
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1752681615000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2642?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Stix Bunkjunker",
+                      "id": 2642
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1752684198000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2653?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Sprocketmonger Lockenstock",
+                      "id": 2653
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1752684724000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2644?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "The One-Armed Bandit",
+                      "id": 2644
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1754179812000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2645?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Mug'Zee, Heads of Security",
+                      "id": 2645
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1754180434000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2646?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Chrome King Gallywix",
+                      "id": 2646
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1752686658000
+                  }
+                ]
+              }
+            },
+            {
+              "difficulty": {
+                "type": "HEROIC",
+                "name": "Heroic"
+              },
+              "status": {
+                "type": "IN_PROGRESS",
+                "name": "In Progress"
+              },
+              "progress": {
+                "completed_count": 7,
+                "total_count": 8,
+                "encounters": [
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2639?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Vexie and the Geargrinders",
+                      "id": 2639
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1754023960000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2640?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Cauldron of Carnage",
+                      "id": 2640
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1754024358000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2641?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Rik Reverb",
+                      "id": 2641
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1754024918000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2642?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Stix Bunkjunker",
+                      "id": 2642
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1754025422000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2653?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Sprocketmonger Lockenstock",
+                      "id": 2653
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1754026393000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2644?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "The One-Armed Bandit",
+                      "id": 2644
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1754026886000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2645?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Mug'Zee, Heads of Security",
+                      "id": 2645
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1754027950000
+                  }
+                ]
+              }
+            },
+            {
+              "difficulty": {
+                "type": "MYTHIC",
+                "name": "Mythic"
+              },
+              "status": {
+                "type": "IN_PROGRESS",
+                "name": "In Progress"
+              },
+              "progress": {
+                "completed_count": 4,
+                "total_count": 8,
+                "encounters": [
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2639?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Vexie and the Geargrinders",
+                      "id": 2639
+                    },
+                    "completed_count": 2,
+                    "last_kill_timestamp": 1753922577000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2640?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Cauldron of Carnage",
+                      "id": 2640
+                    },
+                    "completed_count": 2,
+                    "last_kill_timestamp": 1753930041000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2641?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Rik Reverb",
+                      "id": 2641
+                    },
+                    "completed_count": 2,
+                    "last_kill_timestamp": 1753929267000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2646?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Chrome King Gallywix",
+                      "id": 2646
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1753928478000
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "instance": {
+            "key": {
+              "href": "https://us.api.blizzard.com/data/wow/journal-instance/1302?namespace=static-11.2.0_62213-us"
+            },
+            "name": "Manaforge Omega",
+            "id": 1302
+          },
+          "modes": [
+            {
+              "difficulty": {
+                "type": "NORMAL",
+                "name": "Normal"
+              },
+              "status": {
+                "type": "COMPLETE",
+                "name": "Complete"
+              },
+              "progress": {
+                "completed_count": 8,
+                "total_count": 8,
+                "encounters": [
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2684?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Plexus Sentinel",
+                      "id": 2684
+                    },
+                    "completed_count": 3,
+                    "last_kill_timestamp": 1758416717000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2686?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Loom'ithar",
+                      "id": 2686
+                    },
+                    "completed_count": 3,
+                    "last_kill_timestamp": 1758417283000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2685?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Soulbinder Naazindhri",
+                      "id": 2685
+                    },
+                    "completed_count": 3,
+                    "last_kill_timestamp": 1758417806000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2687?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Forgeweaver Araz",
+                      "id": 2687
+                    },
+                    "completed_count": 3,
+                    "last_kill_timestamp": 1758418497000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2688?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "The Soul Hunters",
+                      "id": 2688
+                    },
+                    "completed_count": 3,
+                    "last_kill_timestamp": 1758419011000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2747?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Fractillus",
+                      "id": 2747
+                    },
+                    "completed_count": 3,
+                    "last_kill_timestamp": 1758419682000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2690?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Nexus-King Salhadaar",
+                      "id": 2690
+                    },
+                    "completed_count": 3,
+                    "last_kill_timestamp": 1758420167000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2691?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Dimensius, the All-Devouring",
+                      "id": 2691
+                    },
+                    "completed_count": 3,
+                    "last_kill_timestamp": 1758421072000
+                  }
+                ]
+              }
+            },
+            {
+              "difficulty": {
+                "type": "HEROIC",
+                "name": "Heroic"
+              },
+              "status": {
+                "type": "COMPLETE",
+                "name": "Complete"
+              },
+              "progress": {
+                "completed_count": 8,
+                "total_count": 8,
+                "encounters": [
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2684?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Plexus Sentinel",
+                      "id": 2684
+                    },
+                    "completed_count": 2,
+                    "last_kill_timestamp": 1755740834000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2686?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Loom'ithar",
+                      "id": 2686
+                    },
+                    "completed_count": 2,
+                    "last_kill_timestamp": 1755741457000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2685?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Soulbinder Naazindhri",
+                      "id": 2685
+                    },
+                    "completed_count": 2,
+                    "last_kill_timestamp": 1755742220000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2687?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Forgeweaver Araz",
+                      "id": 2687
+                    },
+                    "completed_count": 3,
+                    "last_kill_timestamp": 1757898450000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2688?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "The Soul Hunters",
+                      "id": 2688
+                    },
+                    "completed_count": 3,
+                    "last_kill_timestamp": 1757899170000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2747?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Fractillus",
+                      "id": 2747
+                    },
+                    "completed_count": 3,
+                    "last_kill_timestamp": 1757899800000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2690?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Nexus-King Salhadaar",
+                      "id": 2690
+                    },
+                    "completed_count": 3,
+                    "last_kill_timestamp": 1757900568000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2691?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Dimensius, the All-Devouring",
+                      "id": 2691
+                    },
+                    "completed_count": 2,
+                    "last_kill_timestamp": 1757901438000
+                  }
+                ]
+              }
+            },
+            {
+              "difficulty": {
+                "type": "MYTHIC",
+                "name": "Mythic"
+              },
+              "status": {
+                "type": "IN_PROGRESS",
+                "name": "In Progress"
+              },
+              "progress": {
+                "completed_count": 4,
+                "total_count": 8,
+                "encounters": [
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2684?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Plexus Sentinel",
+                      "id": 2684
+                    },
+                    "completed_count": 4,
+                    "last_kill_timestamp": 1758760697000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2686?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Loom'ithar",
+                      "id": 2686
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1756430300000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2685?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Soulbinder Naazindhri",
+                      "id": 2685
+                    },
+                    "completed_count": 4,
+                    "last_kill_timestamp": 1758761678000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2747?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Fractillus",
+                      "id": 2747
+                    },
+                    "completed_count": 2,
+                    "last_kill_timestamp": 1758765514000
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "expansion": {
+        "key": {
+          "href": "https://us.api.blizzard.com/data/wow/journal-expansion/505?namespace=static-11.2.0_62213-us"
+        },
+        "name": "Current Season",
+        "id": 505
+      },
+      "instances": [
+        {
+          "instance": {
+            "key": {
+              "href": "https://us.api.blizzard.com/data/wow/journal-instance/1296?namespace=static-11.2.0_62213-us"
+            },
+            "name": "Liberation of Undermine",
+            "id": 1296
+          },
+          "modes": [
+            {
+              "difficulty": {
+                "type": "LFR",
+                "name": "Raid Finder"
+              },
+              "status": {
+                "type": "COMPLETE",
+                "name": "Complete"
+              },
+              "progress": {
+                "completed_count": 8,
+                "total_count": 8,
+                "encounters": [
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2639?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Vexie and the Geargrinders",
+                      "id": 2639
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1754179288000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2640?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Cauldron of Carnage",
+                      "id": 2640
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1752681117000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2641?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Rik Reverb",
+                      "id": 2641
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1752681615000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2642?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Stix Bunkjunker",
+                      "id": 2642
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1752684198000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2653?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Sprocketmonger Lockenstock",
+                      "id": 2653
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1752684724000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2644?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "The One-Armed Bandit",
+                      "id": 2644
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1754179812000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2645?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Mug'Zee, Heads of Security",
+                      "id": 2645
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1754180434000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2646?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Chrome King Gallywix",
+                      "id": 2646
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1752686658000
+                  }
+                ]
+              }
+            },
+            {
+              "difficulty": {
+                "type": "HEROIC",
+                "name": "Heroic"
+              },
+              "status": {
+                "type": "IN_PROGRESS",
+                "name": "In Progress"
+              },
+              "progress": {
+                "completed_count": 7,
+                "total_count": 8,
+                "encounters": [
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2639?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Vexie and the Geargrinders",
+                      "id": 2639
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1754023960000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2640?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Cauldron of Carnage",
+                      "id": 2640
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1754024358000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2641?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Rik Reverb",
+                      "id": 2641
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1754024918000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2642?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Stix Bunkjunker",
+                      "id": 2642
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1754025422000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2653?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Sprocketmonger Lockenstock",
+                      "id": 2653
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1754026393000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2644?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "The One-Armed Bandit",
+                      "id": 2644
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1754026886000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2645?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Mug'Zee, Heads of Security",
+                      "id": 2645
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1754027950000
+                  }
+                ]
+              }
+            },
+            {
+              "difficulty": {
+                "type": "MYTHIC",
+                "name": "Mythic"
+              },
+              "status": {
+                "type": "IN_PROGRESS",
+                "name": "In Progress"
+              },
+              "progress": {
+                "completed_count": 4,
+                "total_count": 8,
+                "encounters": [
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2639?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Vexie and the Geargrinders",
+                      "id": 2639
+                    },
+                    "completed_count": 2,
+                    "last_kill_timestamp": 1753922577000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2640?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Cauldron of Carnage",
+                      "id": 2640
+                    },
+                    "completed_count": 2,
+                    "last_kill_timestamp": 1753930041000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2641?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Rik Reverb",
+                      "id": 2641
+                    },
+                    "completed_count": 2,
+                    "last_kill_timestamp": 1753929267000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2646?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Chrome King Gallywix",
+                      "id": 2646
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1753928478000
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "instance": {
+            "key": {
+              "href": "https://us.api.blizzard.com/data/wow/journal-instance/1302?namespace=static-11.2.0_62213-us"
+            },
+            "name": "Manaforge Omega",
+            "id": 1302
+          },
+          "modes": [
+            {
+              "difficulty": {
+                "type": "NORMAL",
+                "name": "Normal"
+              },
+              "status": {
+                "type": "COMPLETE",
+                "name": "Complete"
+              },
+              "progress": {
+                "completed_count": 8,
+                "total_count": 8,
+                "encounters": [
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2684?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Plexus Sentinel",
+                      "id": 2684
+                    },
+                    "completed_count": 3,
+                    "last_kill_timestamp": 1758416717000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2686?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Loom'ithar",
+                      "id": 2686
+                    },
+                    "completed_count": 3,
+                    "last_kill_timestamp": 1758417283000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2685?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Soulbinder Naazindhri",
+                      "id": 2685
+                    },
+                    "completed_count": 3,
+                    "last_kill_timestamp": 1758417806000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2687?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Forgeweaver Araz",
+                      "id": 2687
+                    },
+                    "completed_count": 3,
+                    "last_kill_timestamp": 1758418497000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2688?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "The Soul Hunters",
+                      "id": 2688
+                    },
+                    "completed_count": 3,
+                    "last_kill_timestamp": 1758419011000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2747?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Fractillus",
+                      "id": 2747
+                    },
+                    "completed_count": 3,
+                    "last_kill_timestamp": 1758419682000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2690?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Nexus-King Salhadaar",
+                      "id": 2690
+                    },
+                    "completed_count": 3,
+                    "last_kill_timestamp": 1758420167000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2691?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Dimensius, the All-Devouring",
+                      "id": 2691
+                    },
+                    "completed_count": 3,
+                    "last_kill_timestamp": 1758421072000
+                  }
+                ]
+              }
+            },
+            {
+              "difficulty": {
+                "type": "HEROIC",
+                "name": "Heroic"
+              },
+              "status": {
+                "type": "COMPLETE",
+                "name": "Complete"
+              },
+              "progress": {
+                "completed_count": 8,
+                "total_count": 8,
+                "encounters": [
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2684?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Plexus Sentinel",
+                      "id": 2684
+                    },
+                    "completed_count": 2,
+                    "last_kill_timestamp": 1755740834000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2686?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Loom'ithar",
+                      "id": 2686
+                    },
+                    "completed_count": 2,
+                    "last_kill_timestamp": 1755741457000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2685?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Soulbinder Naazindhri",
+                      "id": 2685
+                    },
+                    "completed_count": 2,
+                    "last_kill_timestamp": 1755742220000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2687?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Forgeweaver Araz",
+                      "id": 2687
+                    },
+                    "completed_count": 3,
+                    "last_kill_timestamp": 1757898450000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2688?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "The Soul Hunters",
+                      "id": 2688
+                    },
+                    "completed_count": 3,
+                    "last_kill_timestamp": 1757899170000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2747?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Fractillus",
+                      "id": 2747
+                    },
+                    "completed_count": 3,
+                    "last_kill_timestamp": 1757899800000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2690?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Nexus-King Salhadaar",
+                      "id": 2690
+                    },
+                    "completed_count": 3,
+                    "last_kill_timestamp": 1757900568000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2691?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Dimensius, the All-Devouring",
+                      "id": 2691
+                    },
+                    "completed_count": 2,
+                    "last_kill_timestamp": 1757901438000
+                  }
+                ]
+              }
+            },
+            {
+              "difficulty": {
+                "type": "MYTHIC",
+                "name": "Mythic"
+              },
+              "status": {
+                "type": "IN_PROGRESS",
+                "name": "In Progress"
+              },
+              "progress": {
+                "completed_count": 4,
+                "total_count": 8,
+                "encounters": [
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2684?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Plexus Sentinel",
+                      "id": 2684
+                    },
+                    "completed_count": 4,
+                    "last_kill_timestamp": 1758760697000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2686?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Loom'ithar",
+                      "id": 2686
+                    },
+                    "completed_count": 1,
+                    "last_kill_timestamp": 1756430300000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2685?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Soulbinder Naazindhri",
+                      "id": 2685
+                    },
+                    "completed_count": 4,
+                    "last_kill_timestamp": 1758761678000
+                  },
+                  {
+                    "encounter": {
+                      "key": {
+                        "href": "https://us.api.blizzard.com/data/wow/journal-encounter/2747?namespace=static-11.2.0_62213-us"
+                      },
+                      "name": "Fractillus",
+                      "id": 2747
+                    },
+                    "completed_count": 2,
+                    "last_kill_timestamp": 1758765514000
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
