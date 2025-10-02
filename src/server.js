@@ -1,6 +1,6 @@
 const tmi = require('tmi.js');
 const axios = require('axios');
-const axiosRetry = require('axios-retry');
+const axiosRetry = require('axios-retry').default;
 const dataAccess = require('../dataAccess');
 const { AXIOS_RETRY_CONFIG, HTTP_STATUS } = require('./constants');
 require('dotenv').config();
@@ -58,7 +58,9 @@ class PerkyPugsBot {
 
     setupAxiosRetry() {
         axiosRetry(axios, {
-            retryDelay: axiosRetry[AXIOS_RETRY_CONFIG.RETRY_DELAY],
+            retryDelay: (retryCount) => {
+                return axiosRetry.exponentialDelay(retryCount);
+            },
             retries: AXIOS_RETRY_CONFIG.RETRIES,
             shouldResetTimeout: AXIOS_RETRY_CONFIG.SHOULD_RESET_TIMEOUT,
             retryCondition: (error) => {
