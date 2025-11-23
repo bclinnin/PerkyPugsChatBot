@@ -97,15 +97,18 @@ The bot uses a modular architecture for maintainability and testability:
 ```
 src/
 ├── server.js                 # Main application entry point
-└── modules/
-    ├── auth.js              # Blizzard API authentication
-    ├── state.js             # Application state management
-    ├── messaging.js         # Message throttling and sending
-    ├── permissions.js       # User permission checking
-    ├── wowApi.js           # World of Warcraft API interactions
-    ├── dataAccess.js       # Database access and winner tracking
-    ├── raffle.js           # Raffle logic and management
-    └── commands.js         # Command handlers and routing
+├── constants/                # Application constants
+│   ├── index.js            # Game, API, and configuration constants
+│   └── messages.js         # Error messages and message templates
+└── modules/                 # Service modules (class-based)
+    ├── auth.js             # Blizzard API authentication
+    ├── state.js            # Application state management
+    ├── messaging.js        # Message throttling and sending
+    ├── permissions.js      # User permission checking
+    ├── wowApi.js          # World of Warcraft API interactions
+    ├── dataAccess.js      # Database access and winner tracking
+    ├── raffle.js          # Raffle logic and management
+    └── commands.js        # Command handlers and routing
 ```
 
 ## Scripts
@@ -164,7 +167,7 @@ tests/
 │   ├── messaging.test.js
 │   ├── permissions.test.js
 │   ├── wowApi.test.js
-│   └── commands.test.js
+│   └── raffle.test.js
 └── integration/       # Integration tests
     └── server.test.js
 ```
