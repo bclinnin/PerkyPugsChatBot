@@ -5,18 +5,18 @@ const { AXIOS_RETRY_CONFIG } = require('../../src/constants');
 jest.mock('tmi.js');
 jest.mock('axios');
 jest.mock('axios-retry');
-jest.mock('../../dataAccess');
+jest.mock('../../src/modules/dataAccess');
 
 const tmi = require('tmi.js');
 const axios = require('axios');
 const axiosRetry = require('axios-retry');
-const dataAccess = require('../../dataAccess');
+const DataAccessService = require('../../src/modules/dataAccess');
 
 describe('PerkyPugsBot Integration', () => {
     let bot;
     let mockTwitchClient;
 
-    beforeEach(() => {
+    beforeEach(async () => {
         jest.clearAllMocks();
         
         // Mock environment variables
@@ -39,13 +39,18 @@ describe('PerkyPugsBot Integration', () => {
         };
         tmi.Client.mockImplementation(() => mockTwitchClient);
 
-        // Mock dataAccess
-        dataAccess.dbStartup = jest.fn();
-        dataAccess.PersistNewWinner = jest.fn();
-        dataAccess.AddNameToTwitchWinnersList = jest.fn();
-        dataAccess.AddNameToCharacterWinnersList = jest.fn();
-        dataAccess.previousWinnersByTwitchName = {};
-        dataAccess.previousWinnersByRealmCharacterCombo = {};
+        // Mock DataAccessService
+        const mockDataAccessService = {
+            startup: jest.fn().mockResolvedValue(undefined),
+            persistNewWinner: jest.fn().mockResolvedValue(undefined),
+            addNameToTwitchWinnersList: jest.fn(),
+            addNameToCharacterWinnersList: jest.fn(),
+            hasWonByTwitchName: jest.fn().mockReturnValue(false),
+            hasWonByCharacter: jest.fn().mockReturnValue(false),
+            previousWinnersByTwitchName: {},
+            previousWinnersByRealmCharacterCombo: {}
+        };
+        DataAccessService.mockImplementation(() => mockDataAccessService);
 
         // Mock axios
         axios.post = jest.fn();
@@ -55,6 +60,8 @@ describe('PerkyPugsBot Integration', () => {
         axiosRetry.default = jest.fn();
 
         bot = new PerkyPugsBot();
+        // Initialize the bot (which sets up the database)
+        await bot.initialize();
     });
 
     afterEach(() => {
@@ -69,6 +76,7 @@ describe('PerkyPugsBot Integration', () => {
             expect(bot.authService).toBeDefined();
             expect(bot.state).toBeDefined();
             expect(bot.permissionService).toBeDefined();
+            expect(bot.dataAccessService).toBeDefined();
             expect(bot.messageService).toBeDefined();
             expect(bot.wowApiService).toBeDefined();
             expect(bot.raffleService).toBeDefined();

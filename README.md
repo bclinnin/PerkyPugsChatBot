@@ -28,13 +28,20 @@ A modular Twitch chat bot for managing raffles and World of Warcraft character v
    BLIZZARD_CLIENTID=your_blizzard_client_id
    BLIZZARD_CLIENTSECRET=your_blizzard_client_secret
    DATABASE_URL=postgres://username:password@localhost:5432/database_name
+   CURRENT_ENVIRONMENT=local
    API_TIMEOUT_MS=10000
-   AOTC_MOUNT_ID=12345
+   AOTC_MOUNT_ID=2606
    MOD_LIST=moderator1,moderator2,moderator3
    DEBUG_MODE=false
    ```
 
-3. **Start the bot:**
+3. **Set up the database:**
+   Create the winners table for the current season:
+   ```bash
+   psql $DATABASE_URL -f scripts/create-dimensiuswinners-table.sql
+   ```
+
+4. **Start the bot:**
    ```bash
    npm start
    ```
@@ -59,9 +66,11 @@ Available to all users:
 
 - **`!enter <character>-<realm>`** - Enter the raffle with your character
   - Example: `!enter Thrall-Stormrage`
-  - Character must be max level
-  - Character must meet current raid requirements
-  - No MOP Remix characters allowed
+  - Character must be level 80 (max level)
+  - Character must not have killed the current season's boss on Heroic
+  - Character must not already have the AOTC mount (Royal Voidwing)
+  - No remix characters allowed (MOP Remix, Legion Remix, etc.)
+  - Each Twitch account can only enter once per raffle
 
 ## How the Raffle Works
 
@@ -69,11 +78,16 @@ Available to all users:
 2. **Users enter:** `!enter CharacterName-RealmName`
 3. **Bot validates character:**
    - Checks if character exists
-   - Verifies max level
-   - Confirms current raid requirements
-   - Prevents duplicate entries
+   - Verifies level 80 (max level)
+   - Confirms character is not a remix character (MOP Remix, Legion Remix, etc.)
+   - Prevents duplicate entries (by Twitch account and character)
 4. **Admin closes raffle:** `!closeraffle`
 5. **Admin selects winners:** `!getwinners`
+   - Bot validates each winner:
+     - Checks database for previous wins (by Twitch account and character)
+     - Checks if player has killed the current season's boss on Heroic
+     - Checks if player already has the AOTC mount (Royal Voidwing)
+   - Ineligible players are skipped automatically
 6. **Bot announces winners and resets for next raffle**
 
 ## Architecture
@@ -89,9 +103,19 @@ src/
     ├── messaging.js         # Message throttling and sending
     ├── permissions.js       # User permission checking
     ├── wowApi.js           # World of Warcraft API interactions
+    ├── dataAccess.js       # Database access and winner tracking
     ├── raffle.js           # Raffle logic and management
     └── commands.js         # Command handlers and routing
 ```
+
+## Scripts
+
+Utility scripts are located in the `scripts/` folder:
+
+- `create-dimensiuswinners-table.sql` - SQL script to create the current season's winners table
+- `find-royal-voidwing-id.js` - Utility to find mount IDs from Blizzard API
+
+See `scripts/README.md` for detailed documentation.
 
 ## Troubleshooting
 
@@ -104,13 +128,16 @@ src/
 
 2. **Character validation failing:**
    - Ensure character name includes special characters correctly
-   - Verify character is max level
-   - Check if character meets current raid requirements
+   - Verify character is level 80 (max level)
+   - Check if character is a remix character (MOP Remix, Legion Remix, etc. - not allowed)
+   - Ensure format is `CharacterName-RealmName` with hyphens
 
 3. **Database connection issues:**
    - Verify DATABASE_URL is correct
    - Ensure PostgreSQL is running
    - Check database permissions
+   - Ensure the `dimensiuswinners` table exists (run setup script if needed)
+   - Check CURRENT_ENVIRONMENT is set correctly (local vs production)
 
 ## Development
 
@@ -151,32 +178,57 @@ Required environment variables:
 - `TWITCH_CHANNEL_NAME` - Channel to connect to
 - `BLIZZARD_CLIENTID` - Blizzard API client ID
 - `BLIZZARD_CLIENTSECRET` - Blizzard API client secret
-- `DATABASE_URL` - PostgreSQL connection string
-- `API_TIMEOUT_MS` - API request timeout (default: 10000)
-- `AOTC_MOUNT_ID` - Mount ID for AOTC validation
-- `MOD_LIST` - Comma-separated list of moderators
-- `DEBUG_MODE` - Enable debug logging (true/false)
+- `DATABASE_URL` - PostgreSQL connection string (format: `postgres://user:pass@host:port/dbname`)
+- `CURRENT_ENVIRONMENT` - Environment type: `local` or `production` (affects SSL settings)
+- `API_TIMEOUT_MS` - API request timeout in milliseconds (default: 10000)
+- `AOTC_MOUNT_ID` - Mount ID for AOTC validation (current: 2606 for Royal Voidwing)
+- `MOD_LIST` - Comma-separated list of moderators (no spaces, case-insensitive)
+- `DEBUG_MODE` - Enable debug logging (`true`/`false`)
 
 ## Database
 
 The bot uses PostgreSQL to track previous winners and prevent duplicate wins.
 
-### Tables
+### Current Season Table
 
-- `fyrakkWinners` - Stores winner information
-  - `twitchName` - Twitch username
-  - `realm` - Character realm
-  - `characterName` - Character name
-  - `realmCharacterCombo` - Combined identifier
+- **`dimensiuswinners`** - Tracks winners for the Dimensius (Manaforge Omega) season
+  - `winid` - Unique identifier (UUID, auto-generated)
+  - `twitchname` - Twitch username (indexed)
+  - `realm` - Character realm name
+  - `charactername` - Character name
+  - `realmcharactercombo` - Combined realm-character identifier (indexed)
+  - `windate` - Timestamp of when the win was recorded (auto-set)
+
+### Setup
+
+Create the table using the provided script:
+```bash
+psql $DATABASE_URL -f scripts/create-dimensiuswinners-table.sql
+```
+
+The table includes indexes on `twitchname` and `realmcharactercombo` for fast eligibility checks.
 
 ## Features
 
 - **Character Validation**: Validates WoW characters against Blizzard API
+  - Level 80 requirement
+  - Remix character detection (MOP Remix, Legion Remix, etc.)
+  - Boss kill validation (checks if player has killed current season's boss)
+  - Mount collection validation (checks if player has AOTC mount)
 - **Raffle Management**: Handles entry, validation, and winner selection
-- **Message Throttling**: Prevents rate limit violations
+- **Message Throttling**: Prevents Twitch rate limit violations
 - **Permission System**: Admin/moderator command restrictions
-- **Database Integration**: Tracks winners to prevent duplicates
-- **Error Handling**: Comprehensive error handling and retry logic
+- **Database Integration**: Tracks winners to prevent duplicates (by Twitch account and character)
+- **Error Handling**: Comprehensive error handling and retry logic with exponential backoff
+- **Modular Architecture**: Class-based services with dependency injection for testability
+
+## Current Season Configuration
+
+- **Raid**: Manaforge Omega (ID: 1302)
+- **Boss**: Dimensius, the All-Devouring (Encounter ID: 2691)
+- **Difficulty**: Heroic
+- **AOTC Mount**: Royal Voidwing (Mount ID: 2606)
+- **Max Level**: 80
 
 ## Contributing
 

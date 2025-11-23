@@ -1,0 +1,8 @@
+update the database schema and methods to persist new winners
+
+check against the mount collection and get the new mount collection id
+✓ Mount check integrated into eligibility flow - need to set AOTC_MOUNT_ID in .env
+
+add mocking around DB and wow api calls to have differing levels of integration testing
+
+see if we can mock the irc inputs to tmi so that we can do a true end to end test

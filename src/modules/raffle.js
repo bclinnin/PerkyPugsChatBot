@@ -1,13 +1,13 @@
-const dataAccess = require('../../dataAccess');
 const { GAME, VALIDATION_REASONS, MESSAGE_PRIORITY } = require('../constants');
 const { ERROR_MESSAGES } = require('../constants/messages');
 
 class RaffleService {
-    constructor(state, messageService, wowApiService, permissionService) {
+    constructor(state, messageService, wowApiService, permissionService, dataAccessService) {
         this.state = state;
         this.messageService = messageService;
         this.wowApiService = wowApiService;
         this.permissionService = permissionService;
+        this.dataAccessService = dataAccessService;
     }
 
     async handleEnterCommand(args, tags) {
@@ -104,9 +104,24 @@ class RaffleService {
                 }
             }
 
-            dataAccess.PersistNewWinner(this.state.playerToTwitchNameDictionary[selectedWinner], playerInfoArray[1], playerInfoArray[0], selectedWinner);
-            dataAccess.AddNameToTwitchWinnersList(this.state.playerToTwitchNameDictionary[selectedWinner]);
-            dataAccess.AddNameToCharacterWinnersList(selectedWinner);
+            // Check if player already has the AOTC mount
+            if (process.env.AOTC_MOUNT_ID) {
+                try {
+                    const mountCollection = await this.wowApiService.fetchPlayerMounts(selectedWinner);
+                    if (this.findMountInCollection(mountCollection)) {
+                        console.log(`@${this.state.playerToTwitchNameDictionary[selectedWinner]} already has the AOTC mount and is NOT eligible for a carry!`);
+                        this.messageService.sendMessage(MESSAGE_PRIORITY.High, `@${this.state.playerToTwitchNameDictionary[selectedWinner]} is not eligible!`);
+                        return;
+                    }
+                } catch (mountError) {
+                    // If mount check fails, log but don't block eligibility (fail open)
+                    console.error('Error checking mount collection, continuing with eligibility check:', mountError);
+                }
+            }
+
+            await this.dataAccessService.persistNewWinner(this.state.playerToTwitchNameDictionary[selectedWinner], playerInfoArray[1], playerInfoArray[0], selectedWinner);
+            this.dataAccessService.addNameToTwitchWinnersList(this.state.playerToTwitchNameDictionary[selectedWinner]);
+            this.dataAccessService.addNameToCharacterWinnersList(selectedWinner);
             
             const playerInfo = this.state.getPlayerInfo(selectedWinner);
             this.messageService.sendMessage(MESSAGE_PRIORITY.High, 
@@ -121,13 +136,13 @@ class RaffleService {
 
     checkDatabaseForEligibility(winner) {
         // See if they have won on this twitch account before
-        if (this.state.playerToTwitchNameDictionary[winner] in dataAccess.previousWinnersByTwitchName) {
+        if (this.dataAccessService.hasWonByTwitchName(this.state.playerToTwitchNameDictionary[winner])) {
             console.log(`@${this.state.playerToTwitchNameDictionary[winner]} has won on this twitch account before`);
             this.messageService.sendMessage(MESSAGE_PRIORITY.High, `@${this.state.playerToTwitchNameDictionary[winner]} is not eligible!`);
             return false;
         }
 
-        if (winner in dataAccess.previousWinnersByRealmCharacterCombo) {
+        if (this.dataAccessService.hasWonByCharacter(winner)) {
             console.log(`@${this.state.playerToTwitchNameDictionary[winner]} has won on this WOW character before`);
             this.messageService.sendMessage(MESSAGE_PRIORITY.High, `@${this.state.playerToTwitchNameDictionary[winner]} is not eligible!`);
             return false;
@@ -188,8 +203,19 @@ class RaffleService {
             throw new Error(ERROR_MESSAGES.EMPTY_MOUNT_COLLECTION);
         }
 
+        // Convert mount ID to number for comparison (API returns numbers, env var is string)
+        const targetMountId = parseInt(process.env.AOTC_MOUNT_ID, 10);
+        
+        if (isNaN(targetMountId)) {
+            console.log('AOTC_MOUNT_ID is not a valid number, skipping mount check');
+            return false;
+        }
+
         for (const mount of playerMountCollection.data.mounts) {
-            if (mount.mount.id === process.env.AOTC_MOUNT_ID) {
+            // Handle both string and number ID formats
+            const mountId = typeof mount.mount.id === 'number' ? mount.mount.id : parseInt(mount.mount.id, 10);
+            if (mountId === targetMountId) {
+                console.log(`Found AOTC mount (ID: ${targetMountId}) in player collection`);
                 return true;
             }
         }

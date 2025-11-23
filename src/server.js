@@ -1,7 +1,6 @@
 const tmi = require('tmi.js');
 const axios = require('axios');
 const axiosRetry = require('axios-retry').default;
-const dataAccess = require('../dataAccess');
 const { AXIOS_RETRY_CONFIG, HTTP_STATUS } = require('./constants');
 require('dotenv').config();
 
@@ -11,28 +10,26 @@ const AppState = require('./modules/state');
 const { MessageService } = require('./modules/messaging');
 const PermissionService = require('./modules/permissions');
 const WoWApiService = require('./modules/wowApi');
+const DataAccessService = require('./modules/dataAccess');
 const RaffleService = require('./modules/raffle');
 const CommandService = require('./modules/commands');
 
 class PerkyPugsBot {
     constructor() {
-        this.setupDatabase();
-        this.initializeServices();
-        this.setupTwitchClient();
+        // Setup axios retry configuration (no dependencies)
         this.setupAxiosRetry();
     }
 
-    setupDatabase() {
-        dataAccess.dbStartup();
-    }
-
-    initializeServices() {
-        // Initialize core services
+    async initialize() {
+        // Initialize services in dependency order
+        // Each step waits for the previous to complete before proceeding
+        
+        // Step 1: Core services with no dependencies
         this.authService = new AuthService();
         this.state = new AppState();
         this.permissionService = new PermissionService();
         
-        // Initialize Twitch client
+        // Step 2: Twitch client (depends on env vars only)
         this.twitchClient = new tmi.Client({
             connection: {
                 reconnect: true
@@ -43,15 +40,33 @@ class PerkyPugsBot {
             },
             channels: [process.env.TWITCH_CHANNEL_NAME]
         });
-
-        // Initialize dependent services
+        
+        // Step 3: Services that depend on authService and state
         this.messageService = new MessageService(this.twitchClient, this.state.channel);
         this.wowApiService = new WoWApiService(this.authService);
-        this.raffleService = new RaffleService(this.state, this.messageService, this.wowApiService, this.permissionService);
-        this.commandService = new CommandService(this.state, this.messageService, this.raffleService, this.permissionService);
-    }
-
-    setupTwitchClient() {
+        
+        // Step 4: Database service (async - must complete before dependent services)
+        this.dataAccessService = new DataAccessService();
+        await this.dataAccessService.startup();
+        
+        // Step 5: Services that depend on dataAccessService
+        this.raffleService = new RaffleService(
+            this.state, 
+            this.messageService, 
+            this.wowApiService, 
+            this.permissionService, 
+            this.dataAccessService
+        );
+        
+        // Step 6: Command service (depends on raffleService)
+        this.commandService = new CommandService(
+            this.state, 
+            this.messageService, 
+            this.raffleService, 
+            this.permissionService
+        );
+        
+        // Step 7: Connect to Twitch and setup message handlers (depends on commandService)
         this.twitchClient.connect();
         this.setupMessageHandler();
     }
@@ -132,6 +147,7 @@ class PerkyPugsBot {
         this.commandService = null;
         this.authService = null;
         this.permissionService = null;
+        this.dataAccessService = null;
         this.state = null;
         this.twitchClient = null;
     }
@@ -141,7 +157,12 @@ class PerkyPugsBot {
 if (process.env.NODE_ENV !== 'test' && !process.env.JEST_WORKER_ID) {
     // Start the bot
     const bot = new PerkyPugsBot();
-    bot.start();
+    bot.initialize().then(() => {
+        bot.start();
+    }).catch((error) => {
+        console.error('Failed to initialize bot:', error);
+        process.exit(1);
+    });
 
     // Handle graceful shutdown
     process.on('SIGINT', () => {
