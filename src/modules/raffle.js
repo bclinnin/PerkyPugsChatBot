@@ -135,16 +135,24 @@ class RaffleService {
     }
 
     checkDatabaseForEligibility(winner) {
+        const twitchUsername = this.state.playerToTwitchNameDictionary[winner];
+        
+        // Admins bypass all eligibility checks
+        if (this.permissionService.isUsernameAdmin("@"+twitchUsername)) {
+            console.log(`@${twitchUsername} is an admin, bypassing eligibility checks`);
+            return true;
+        }
+
         // See if they have won on this twitch account before
-        if (this.dataAccessService.hasWonByTwitchName(this.state.playerToTwitchNameDictionary[winner])) {
-            console.log(`@${this.state.playerToTwitchNameDictionary[winner]} has won on this twitch account before`);
-            this.messageService.sendMessage(MESSAGE_PRIORITY.High, `@${this.state.playerToTwitchNameDictionary[winner]} is not eligible!`);
+        if (this.dataAccessService.hasWonByTwitchName(twitchUsername)) {
+            console.log(`@${twitchUsername} has won on this twitch account before`);
+            this.messageService.sendMessage(MESSAGE_PRIORITY.High, `@${twitchUsername} is not eligible!`);
             return false;
         }
 
         if (this.dataAccessService.hasWonByCharacter(winner)) {
-            console.log(`@${this.state.playerToTwitchNameDictionary[winner]} has won on this WOW character before`);
-            this.messageService.sendMessage(MESSAGE_PRIORITY.High, `@${this.state.playerToTwitchNameDictionary[winner]} is not eligible!`);
+            console.log(`@${twitchUsername} has won on this WOW character before`);
+            this.messageService.sendMessage(MESSAGE_PRIORITY.High, `@${twitchUsername} is not eligible!`);
             return false;
         }
         return true;

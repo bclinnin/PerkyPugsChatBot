@@ -42,6 +42,14 @@ class PermissionService {
         // Everyone else can only enter one character per twitch user
         return !currentRaffleTwitchName.includes(tags.username);
     }
+
+    isUsernameAdmin(username) {
+        if (!username || !this.modList) {
+            return false;
+        }
+        const modListArray = this.modList.split(',').map(name => name.trim().toLowerCase());
+        return modListArray.includes(username.toLowerCase());
+    }
 }
 
 module.exports = PermissionService;
