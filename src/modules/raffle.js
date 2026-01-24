@@ -138,7 +138,7 @@ class RaffleService {
         const twitchUsername = this.state.playerToTwitchNameDictionary[winner];
         
         // Admins bypass all eligibility checks
-        if (this.permissionService.isUsernameAdmin("@"+twitchUsername)) {
+        if (this.permissionService.isUsernameAdmin(twitchUsername)) {
             console.log(`@${twitchUsername} is an admin, bypassing eligibility checks`);
             return true;
         }
