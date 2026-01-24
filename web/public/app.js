@@ -96,12 +96,14 @@ function displayWorkerStatus(status) {
     const statusEl = document.getElementById('workerStatus');
     const uptimeEl = document.getElementById('workerUptime');
     const startBtn = document.getElementById('startWorkerBtn');
+    const stopBtn = document.getElementById('stopWorkerBtn');
     const restartBtn = document.getElementById('restartWorkerBtn');
     
     if (status.status === 'stopped') {
         statusEl.innerHTML = '<span class="status-indicator status-stopped"></span><span class="status-text">Stopped</span>';
         uptimeEl.style.display = 'none';
         startBtn.style.display = 'inline-block';
+        stopBtn.style.display = 'none';
         restartBtn.style.display = 'none';
     } else if (status.status === 'running') {
         statusEl.innerHTML = '<span class="status-indicator status-running"></span><span class="status-text">Running</span>';
@@ -112,11 +114,13 @@ function displayWorkerStatus(status) {
         uptimeEl.style.display = 'block';
         
         startBtn.style.display = 'none';
+        stopBtn.style.display = 'inline-block';
         restartBtn.style.display = 'inline-block';
     } else {
         statusEl.innerHTML = `<span class="status-indicator status-unknown"></span><span class="status-text">${status.status}</span>`;
         uptimeEl.style.display = 'none';
         startBtn.style.display = 'none';
+        stopBtn.style.display = 'none';
         restartBtn.style.display = 'none';
     }
 }
@@ -150,6 +154,24 @@ async function startWorker() {
         await loadWorkerStatus();
     } catch (error) {
         alert('Failed to start worker: ' + error.message);
+    }
+}
+
+// Stop worker
+async function stopWorker() {
+    if (!confirm('Stop the bot worker? Any running raffle will be interrupted. Continue?')) {
+        return;
+    }
+    
+    try {
+        await apiCall('', { 
+            baseUrl: '/api/heroku/worker/stop',
+            method: 'POST'
+        });
+        alert('Worker stopped successfully!');
+        await loadWorkerStatus();
+    } catch (error) {
+        alert('Failed to stop worker: ' + error.message);
     }
 }
 

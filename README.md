@@ -88,8 +88,11 @@ A password-protected web interface for managing canned messages, viewing winner 
 - Real-time filtering with dynamic search
 
 #### Bot Control Tab
-- **Worker Status**: View real-time bot status (running/stopped)
-- **Start/Restart Worker**: Control the bot dyno remotely
+- **Worker Status**: View real-time bot status (running/stopped) with uptime
+- **Start/Stop/Restart Worker**: Control the bot dyno remotely
+  - Start: Launch the worker when stopped
+  - Stop: Shut down the worker when finished with raffles
+  - Restart: Restart the worker to apply changes
 - **Twitch Channel Config**: Change the channel the bot monitors
 - Auto-refresh status every 10 seconds
 
@@ -360,7 +363,7 @@ The canned messages table includes an index on `enabled` and `displayorder` for 
   - **Winners Viewer**: Search and sort complete winner history
   - **Bot Control**: Monitor and control the worker dyno remotely
     - Real-time worker status (running/stopped with uptime)
-    - Start/restart worker via web interface
+    - Start/stop/restart worker via web interface
     - Change Twitch channel without SSH/CLI access
     - Auto-refresh status every 10 seconds
 - **Message Throttling**: Prevents Twitch rate limit violations

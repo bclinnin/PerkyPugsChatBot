@@ -106,6 +106,27 @@ router.post('/worker/start', async (req, res) => {
     }
 });
 
+// POST /api/heroku/worker/stop - Stop worker dyno
+router.post('/worker/stop', async (req, res) => {
+    try {
+        // Scale worker to 0
+        await herokuApiCall('PATCH', `/apps/${process.env.HEROKU_APP_NAME}/formation/worker`, {
+            quantity: 0
+        });
+        
+        res.json({
+            success: true,
+            message: 'Worker stopped successfully'
+        });
+    } catch (error) {
+        console.error('Error stopping worker:', error);
+        res.status(500).json({ 
+            error: 'Failed to stop worker',
+            message: error.response?.data?.message || error.message
+        });
+    }
+});
+
 // POST /api/heroku/worker/restart - Restart worker dyno
 router.post('/worker/restart', async (req, res) => {
     try {
