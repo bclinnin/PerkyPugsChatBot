@@ -23,9 +23,9 @@ const BUFFER_MESSAGES = {
 const CANNED_MESSAGES = [
     'When the raffle is open, type !enter name-realm. Please include any special characters - the bot will @ you to tell you that your character hasn\'t been found, or that you had an error.',
     'No, there is no bad luck protection.',
-    'Like what we\'re doing? Donate to our campaign to raise money for Gamers Outreach! https://tiltify.com/+perky-pugs/friendshipdragon2',
+    'Like what we\'re doing? Donate to our campaign to raise money for The Global FoodBanking Network! https://tiltify.com/@perkypugs/perky-pugs-friendship-voidwing-20-fundraiser',
     'Interested in learning more about Perky Pugs? Join our Discord! Discord.gg/PerkyPugs',
-    'If you are having trouble entering the raffle, please see the #FriendshipDragon2 channel in the Perky Pugs Discord or DM the Modmail bot for more detailed help. Discord.gg/PerkyPugs'
+    'If you are having trouble entering the raffle, please see the #friendship-dragon-carries channel in the Perky Pugs Discord or DM the Modmail bot for more detailed help. Discord.gg/PerkyPugs'
 ];
 
 // Help Command Message
