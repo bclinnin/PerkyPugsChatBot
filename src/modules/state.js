@@ -10,6 +10,8 @@ class AppState {
         this.currentRaffleTwitchName = [];
         this.playerFactionDictionary = {};
         this.playerToTwitchNameDictionary = {};
+        this.playerOriginalFormatDictionary = {};
+        this.currentSessionWinners = [];
         this.modList = process.env.MOD_LIST;
         this.messageFeedEnabled = true;
     }
@@ -19,6 +21,8 @@ class AppState {
         this.isRaffleOpen = true;
         this.currentRaffleList = [];
         this.currentRaffleTwitchName = [];
+        this.playerOriginalFormatDictionary = {};
+        this.currentSessionWinners = [];
     }
 
     closeRaffle() {
@@ -95,6 +99,23 @@ class AppState {
             faction: this.playerFactionDictionary[realmAndCharacterName],
             twitchName: this.playerToTwitchNameDictionary[realmAndCharacterName]
         };
+    }
+
+    // Original format and session winner management
+    addOriginalFormat(realmAndCharacterName, originalFormat) {
+        this.playerOriginalFormatDictionary[realmAndCharacterName] = originalFormat;
+    }
+
+    addSessionWinner(winnerData) {
+        this.currentSessionWinners.push(winnerData);
+    }
+
+    clearSessionWinners() {
+        this.currentSessionWinners = [];
+    }
+
+    getSessionWinners() {
+        return this.currentSessionWinners;
     }
 }
 

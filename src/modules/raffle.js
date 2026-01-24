@@ -2,12 +2,13 @@ const { GAME, VALIDATION_REASONS, MESSAGE_PRIORITY } = require('../constants');
 const { ERROR_MESSAGES } = require('../constants/messages');
 
 class RaffleService {
-    constructor(state, messageService, wowApiService, permissionService, dataAccessService) {
+    constructor(state, messageService, wowApiService, permissionService, dataAccessService, discordService) {
         this.state = state;
         this.messageService = messageService;
         this.wowApiService = wowApiService;
         this.permissionService = permissionService;
         this.dataAccessService = dataAccessService;
+        this.discordService = discordService;
     }
 
     async handleEnterCommand(args, tags) {
@@ -18,6 +19,9 @@ class RaffleService {
         }
 
         try {
+            // Capture original format before parsing
+            const originalFormat = args.join(' ');
+            
             const [character, realm] = this.wowApiService.parseCharacterAndRealm(args);
             const realmAndCharacterName = `${realm}_${character}`;
 
@@ -34,7 +38,7 @@ class RaffleService {
 
             // Fetch character summary and register them for raffle if they exist
             const characterSummary = await this.wowApiService.fetchPlayerSummary(realm, character);
-            await this.registerPlayerForRaffle(characterSummary, realmAndCharacterName, tags);
+            await this.registerPlayerForRaffle(characterSummary, realmAndCharacterName, tags, originalFormat);
         } catch {
             if (this.state.isRaffleOpen) {
                 this.messageService.addWrongName(tags.username);
@@ -42,7 +46,7 @@ class RaffleService {
         }
     }
 
-    async registerPlayerForRaffle(characterSummary, realmAndCharacterName, tags) {
+    async registerPlayerForRaffle(characterSummary, realmAndCharacterName, tags, originalFormat) {
         // Raffle must still be open to register the player
         if (!this.state.isRaffleOpen) {return;}
 
@@ -67,6 +71,7 @@ class RaffleService {
 
         const playerFaction = characterSummary.data.faction.type;
         this.state.addPlayerToRaffle(realmAndCharacterName, tags.username, playerFaction);
+        this.state.addOriginalFormat(realmAndCharacterName, originalFormat);
         this.messageService.addSuccessfulEnter(tags.username);
     }
 
@@ -126,6 +131,13 @@ class RaffleService {
             const playerInfo = this.state.getPlayerInfo(selectedWinner);
             this.messageService.sendMessage(MESSAGE_PRIORITY.High, 
                 `@${playerInfo.twitchName} has won a carry with character {{  ${selectedWinner.replace('_', '-')}  }} on ${playerInfo.faction} ! ${this.state.modList}`);
+            
+            // Track this winner for Discord posting
+            this.state.addSessionWinner({
+                originalFormat: this.state.playerOriginalFormatDictionary[selectedWinner],
+                faction: playerInfo.faction,
+                twitchName: playerInfo.twitchName
+            });
             
             this.state.incrementWinnerCount();
         } catch (error) {
@@ -266,6 +278,14 @@ class RaffleService {
             
             if (this.shouldContinueDrawingWinners()) {
                 return this.handleGetWinnersCommand(args, tags);
+            }
+            
+            // All winners have been drawn, post to Discord
+            try {
+                await this.discordService.postWinnersToDiscord(this.state.getSessionWinners());
+            } catch (discordError) {
+                console.error('Discord posting failed, but raffle completed successfully:', discordError);
+                // Don't throw - Discord errors shouldn't break the raffle
             }
         } catch (error) {
             console.log(error);

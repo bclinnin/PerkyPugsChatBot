@@ -11,6 +11,7 @@ const { MessageService } = require('./modules/messaging');
 const PermissionService = require('./modules/permissions');
 const WoWApiService = require('./modules/wowApi');
 const DataAccessService = require('./modules/dataAccess');
+const DiscordService = require('./modules/discord');
 const RaffleService = require('./modules/raffle');
 const CommandService = require('./modules/commands');
 
@@ -49,13 +50,17 @@ class PerkyPugsBot {
         this.dataAccessService = new DataAccessService();
         await this.dataAccessService.startup();
         
+        // Step 4.5: Discord service (no dependencies)
+        this.discordService = new DiscordService(process.env.DISCORD_WEBHOOK_URL);
+        
         // Step 5: Services that depend on dataAccessService
         this.raffleService = new RaffleService(
             this.state, 
             this.messageService, 
             this.wowApiService, 
             this.permissionService, 
-            this.dataAccessService
+            this.dataAccessService,
+            this.discordService
         );
         
         // Step 6: Command service (depends on raffleService)

@@ -1,7 +1,7 @@
 -- Schema for the Dimensius (Manaforge Omega) season winners table
 -- This table tracks winners for the current World of Warcraft season
 
-CREATE TABLE dimensiuswinners (
+CREATE TABLE IF NOT EXISTS dimensiuswinners (
     winid uuid DEFAULT gen_random_uuid(),
     twitchname character varying NOT NULL,
     realm character varying NOT NULL,
@@ -12,8 +12,8 @@ CREATE TABLE dimensiuswinners (
 
 -- Indexes for common queries
 -- Index on twitchname for quick lookups
-CREATE INDEX idx_dimensiuswinners_twitchname ON dimensiuswinners(twitchname);
+CREATE INDEX IF NOT EXISTS idx_dimensiuswinners_twitchname ON dimensiuswinners(twitchname);
 
 -- Index on realmcharactercombo for quick lookups
-CREATE INDEX idx_dimensiuswinners_realmcharactercombo ON dimensiuswinners(realmcharactercombo);
+CREATE INDEX IF NOT EXISTS idx_dimensiuswinners_realmcharactercombo ON dimensiuswinners(realmcharactercombo);
 

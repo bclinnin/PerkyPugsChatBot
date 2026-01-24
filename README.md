@@ -28,6 +28,7 @@ A modular Twitch chat bot for managing raffles and World of Warcraft character v
    BLIZZARD_CLIENTID=your_blizzard_client_id
    BLIZZARD_CLIENTSECRET=your_blizzard_client_secret
    DATABASE_URL=postgres://username:password@localhost:5432/database_name
+   DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/YOUR_WEBHOOK_ID/YOUR_WEBHOOK_TOKEN
    CURRENT_ENVIRONMENT=local
    API_TIMEOUT_MS=10000
    AOTC_MOUNT_ID=2606
@@ -41,7 +42,16 @@ A modular Twitch chat bot for managing raffles and World of Warcraft character v
    psql $DATABASE_URL -f scripts/create-dimensiuswinners-table.sql
    ```
 
-4. **Start the bot:**
+4. **Set up Discord webhook (optional):**
+   To enable automatic winner posting to Discord:
+   - Open your Discord server settings
+   - Navigate to Integrations → Webhooks
+   - Click "New Webhook"
+   - Choose the channel where winners should be posted
+   - Copy the webhook URL
+   - Add it to your `.env` file as `DISCORD_WEBHOOK_URL`
+
+5. **Start the bot:**
    ```bash
    npm start
    ```
@@ -88,7 +98,11 @@ Available to all users:
      - Checks if player has killed the current season's boss on Heroic
      - Checks if player already has the AOTC mount (Royal Voidwing)
    - Ineligible players are skipped automatically
-6. **Bot announces winners and resets for next raffle**
+6. **Bot announces winners:**
+   - Each winner is announced individually in Twitch chat
+   - After all winners are drawn, a formatted list is posted to Discord (if configured)
+   - Discord post includes two copy-pasteable code blocks separated by faction (Alliance/Horde)
+7. **Ready for next raffle**
 
 ## Architecture
 
@@ -107,6 +121,7 @@ src/
     ├── permissions.js      # User permission checking
     ├── wowApi.js          # World of Warcraft API interactions
     ├── dataAccess.js      # Database access and winner tracking
+    ├── discord.js         # Discord webhook integration
     ├── raffle.js          # Raffle logic and management
     └── commands.js        # Command handlers and routing
 ```
@@ -116,6 +131,7 @@ src/
 Utility scripts are located in the `scripts/` folder:
 
 - `create-dimensiuswinners-table.sql` - SQL script to create the current season's winners table
+- `clear-winners.sql` - SQL script to clear all winners from the table
 - `find-royal-voidwing-id.js` - Utility to find mount IDs from Blizzard API
 
 See `scripts/README.md` for detailed documentation.
@@ -182,6 +198,7 @@ Required environment variables:
 - `BLIZZARD_CLIENTID` - Blizzard API client ID
 - `BLIZZARD_CLIENTSECRET` - Blizzard API client secret
 - `DATABASE_URL` - PostgreSQL connection string (format: `postgres://user:pass@host:port/dbname`)
+- `DISCORD_WEBHOOK_URL` - Discord webhook URL for posting winner lists (optional, format: `https://discord.com/api/webhooks/ID/TOKEN`)
 - `CURRENT_ENVIRONMENT` - Environment type: `local` or `production` (affects SSL settings)
 - `API_TIMEOUT_MS` - API request timeout in milliseconds (default: 10000)
 - `AOTC_MOUNT_ID` - Mount ID for AOTC validation (current: 2606 for Royal Voidwing)
@@ -219,6 +236,11 @@ The table includes indexes on `twitchname` and `realmcharactercombo` for fast el
   - Boss kill validation (checks if player has killed current season's boss)
   - Mount collection validation (checks if player has AOTC mount)
 - **Raffle Management**: Handles entry, validation, and winner selection
+- **Discord Integration**: Posts faction-separated winner lists to Discord
+  - Automatic posting after raffle completion
+  - Winners separated by faction (Alliance/Horde)
+  - Copy-pasteable code blocks for easy in-game invites
+  - Preserves original character name formatting with special characters
 - **Message Throttling**: Prevents Twitch rate limit violations
 - **Permission System**: Admin/moderator command restrictions
 - **Database Integration**: Tracks winners to prevent duplicates (by Twitch account and character)
