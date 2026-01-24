@@ -91,6 +91,18 @@ class DataAccessService {
     hasWonByCharacter(character) {
         return character in this.previousWinnersByRealmCharacterCombo;
     }
+
+    async loadCannedMessages() {
+        try {
+            const result = await this.client.query(
+                'SELECT messagetext FROM cannedmessages WHERE enabled = true ORDER BY displayorder ASC'
+            );
+            return result.rows.map(row => row.messagetext);
+        } catch (error) {
+            console.error('Error loading canned messages:', error);
+            return [];
+        }
+    }
 }
 
 module.exports = DataAccessService;

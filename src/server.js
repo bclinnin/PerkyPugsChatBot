@@ -42,13 +42,16 @@ class PerkyPugsBot {
             channels: [process.env.TWITCH_CHANNEL_NAME]
         });
         
-        // Step 3: Services that depend on authService and state
-        this.messageService = new MessageService(this.twitchClient, this.state.channel);
+        // Step 3: Services that depend on authService
         this.wowApiService = new WoWApiService(this.authService);
         
         // Step 4: Database service (async - must complete before dependent services)
         this.dataAccessService = new DataAccessService();
         await this.dataAccessService.startup();
+        
+        // Step 4.5: Message service (depends on dataAccessService for canned messages)
+        this.messageService = new MessageService(this.twitchClient, this.state.channel, true, this.dataAccessService);
+        await this.messageService.loadCannedMessagesFromDatabase();
         
         // Step 4.5: Discord service (no dependencies)
         this.discordService = new DiscordService(process.env.DISCORD_WEBHOOK_URL);

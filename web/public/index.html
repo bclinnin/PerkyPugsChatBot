@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canned Messages Admin</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🐶 Perky Pugs - Canned Messages</h1>
+            <button onclick="logout()" class="logout-btn">Logout</button>
+        </header>
+
+        <section class="add-message">
+            <h2>Add New Message</h2>
+            <form id="addForm">
+                <textarea 
+                    id="newMessage" 
+                    placeholder="Enter message text..." 
+                    maxlength="500"
+                    rows="3"
+                    required
+                ></textarea>
+                <div class="form-footer">
+                    <span id="charCount" class="char-count">0 / 500</span>
+                    <button type="submit">Add Message</button>
+                </div>
+            </form>
+            <div id="preview" class="preview"></div>
+        </section>
+
+        <section class="messages-list">
+            <h2>Current Messages</h2>
+            <div id="messagesList"></div>
+        </section>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

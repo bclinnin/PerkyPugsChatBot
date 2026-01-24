@@ -51,10 +51,51 @@ A modular Twitch chat bot for managing raffles and World of Warcraft character v
    - Copy the webhook URL
    - Add it to your `.env` file as `DISCORD_WEBHOOK_URL`
 
-5. **Start the bot:**
+5. **Set up canned messages:**
+   Create the canned messages table:
    ```bash
-   npm start
+   psql $DATABASE_URL -f scripts/create-cannedmessages-table.sql
    ```
+
+6. **Set up admin panel (optional):**
+   To enable the web-based admin panel for managing canned messages:
+   - Add `ADMIN_PANEL_PASSWORD=your_secure_password` to your `.env` file
+   - The admin panel will be available at `http://localhost:3000/admin` (local) or `https://your-app.herokuapp.com/admin` (Heroku)
+
+7. **Start the bot:**
+   ```bash
+   npm start              # Start the bot
+   npm run web            # Start the admin panel (optional, separate process)
+   ```
+
+## Web Admin Panel
+
+A password-protected web interface for managing canned messages, accessible anytime (even when the bot is offline).
+
+### Features
+- Add, edit, and delete canned messages
+- Enable/disable messages without deleting them
+- Live character counter (500 char Twitch limit)
+- Preview messages before saving
+- Works independently of the bot
+
+### Access
+- **Local Development:** `http://localhost:3000/admin`
+- **Heroku Production:** `https://your-app.herokuapp.com/admin`
+
+### Usage
+1. Navigate to the admin panel URL
+2. Enter your admin password (set via `ADMIN_PANEL_PASSWORD` environment variable)
+3. Manage messages through the web interface
+4. Changes are saved to the database immediately
+5. Bot loads latest messages when it starts
+
+### Heroku Deployment
+The `Procfile` defines two process types:
+- **`web`** - Admin panel (always running, free on Heroku)
+- **`worker`** - Twitch bot (start manually for raffles)
+
+Both processes connect to the same PostgreSQL database, so admins can update messages anytime and the bot will use the latest messages when started.
 
 ## Bot Commands
 
@@ -124,6 +165,18 @@ src/
     ├── discord.js         # Discord webhook integration
     ├── raffle.js          # Raffle logic and management
     └── commands.js        # Command handlers and routing
+web/                         # Web admin panel
+├── server.js               # Express server
+├── middleware/
+│   └── auth.js            # Password authentication
+├── routes/
+│   └── messages.js        # API endpoints for canned messages
+├── database/
+│   └── db.js              # Database connection utility
+└── public/
+    ├── index.html         # Admin UI
+    ├── style.css          # Styles
+    └── app.js             # Frontend JavaScript
 ```
 
 ## Scripts
@@ -131,6 +184,7 @@ src/
 Utility scripts are located in the `scripts/` folder:
 
 - `create-dimensiuswinners-table.sql` - SQL script to create the current season's winners table
+- `create-cannedmessages-table.sql` - SQL script to create the canned messages table with default messages
 - `clear-winners.sql` - SQL script to clear all winners from the table
 - `find-royal-voidwing-id.js` - Utility to find mount IDs from Blizzard API
 
@@ -199,6 +253,7 @@ Required environment variables:
 - `BLIZZARD_CLIENTSECRET` - Blizzard API client secret
 - `DATABASE_URL` - PostgreSQL connection string (format: `postgres://user:pass@host:port/dbname`)
 - `DISCORD_WEBHOOK_URL` - Discord webhook URL for posting winner lists (optional, format: `https://discord.com/api/webhooks/ID/TOKEN`)
+- `ADMIN_PANEL_PASSWORD` - Password for web admin panel access (optional, but required for admin panel)
 - `CURRENT_ENVIRONMENT` - Environment type: `local` or `production` (affects SSL settings)
 - `API_TIMEOUT_MS` - API request timeout in milliseconds (default: 10000)
 - `AOTC_MOUNT_ID` - Mount ID for AOTC validation (current: 2606 for Royal Voidwing)
@@ -219,14 +274,26 @@ The bot uses PostgreSQL to track previous winners and prevent duplicate wins.
   - `realmcharactercombo` - Combined realm-character identifier (indexed)
   - `windate` - Timestamp of when the win was recorded (auto-set)
 
+### Canned Messages Table
+
+- **`cannedmessages`** - Stores rotating informational messages for Twitch chat
+  - `messageid` - Unique identifier (auto-incrementing)
+  - `messagetext` - Message content (TEXT, max 500 chars recommended for Twitch)
+  - `displayorder` - Order in rotation sequence
+  - `enabled` - Whether message is active (soft delete flag)
+  - `createdat` - Timestamp when message was created
+  - `updatedat` - Timestamp when message was last modified
+
 ### Setup
 
-Create the table using the provided script:
+Create the tables using the provided scripts:
 ```bash
 psql $DATABASE_URL -f scripts/create-dimensiuswinners-table.sql
+psql $DATABASE_URL -f scripts/create-cannedmessages-table.sql
 ```
 
-The table includes indexes on `twitchname` and `realmcharactercombo` for fast eligibility checks.
+The winners table includes indexes on `twitchname` and `realmcharactercombo` for fast eligibility checks.
+The canned messages table includes an index on `enabled` and `displayorder` for efficient message rotation.
 
 ## Features
 
@@ -241,6 +308,11 @@ The table includes indexes on `twitchname` and `realmcharactercombo` for fast el
   - Winners separated by faction (Alliance/Horde)
   - Copy-pasteable code blocks for easy in-game invites
   - Preserves original character name formatting with special characters
+- **Web Admin Panel**: Manage canned messages via browser
+  - Password-protected web interface
+  - Works when bot is offline (perfect for Heroku worker model)
+  - Real-time message management with character counting
+  - Enable/disable messages without deletion
 - **Message Throttling**: Prevents Twitch rate limit violations
 - **Permission System**: Admin/moderator command restrictions
 - **Database Integration**: Tracks winners to prevent duplicates (by Twitch account and character)

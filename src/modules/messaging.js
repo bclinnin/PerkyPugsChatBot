@@ -2,9 +2,10 @@ const { MESSAGING, BUFFER_TYPES, MESSAGE_PRIORITY } = require('../constants');
 const { BUFFER_MESSAGES, CANNED_MESSAGES } = require('../constants/messages');
 
 class MessageService {
-    constructor(twitchClient, channel, setupIntervals = true) {
+    constructor(twitchClient, channel, setupIntervals = true, dataAccessService = null) {
         this.client = twitchClient;
         this.channel = channel;
+        this.dataAccessService = dataAccessService;
         this.timeWindowForThrottle = null;
         this.messagesInThrottleWindow = 0;
         this.messageBuffers = {
@@ -159,6 +160,26 @@ class MessageService {
         
         // Clear client reference
         this.client = null;
+    }
+
+    async loadCannedMessagesFromDatabase() {
+        if (!this.dataAccessService) {
+            console.log('Using hardcoded canned messages (no database service)');
+            return;
+        }
+        
+        try {
+            const messages = await this.dataAccessService.loadCannedMessages();
+            if (messages && messages.length > 0) {
+                this.cannedMessages = messages;
+                console.log(`Loaded ${messages.length} canned messages from database`);
+            } else {
+                console.log('No messages in database, using defaults');
+            }
+        } catch (error) {
+            console.error('Error loading canned messages from database:', error);
+            console.log('Falling back to hardcoded messages');
+        }
     }
 }
 
