@@ -9,32 +9,135 @@
 <body>
     <div class="container">
         <header>
-            <h1>🐶 Perky Pugs - Canned Messages</h1>
+            <h1>🐶 Perky Pugs Admin</h1>
+            <nav class="tabs">
+                <button class="tab-btn active" onclick="switchTab('messages')">Canned Messages</button>
+                <button class="tab-btn" onclick="switchTab('winners')">Winners</button>
+                <button class="tab-btn" onclick="switchTab('botControl')">Bot Control</button>
+            </nav>
             <button onclick="logout()" class="logout-btn">Logout</button>
         </header>
 
-        <section class="add-message">
-            <h2>Add New Message</h2>
-            <form id="addForm">
-                <textarea 
-                    id="newMessage" 
-                    placeholder="Enter message text..." 
-                    maxlength="500"
-                    rows="3"
-                    required
-                ></textarea>
-                <div class="form-footer">
-                    <span id="charCount" class="char-count">0 / 500</span>
-                    <button type="submit">Add Message</button>
-                </div>
-            </form>
-            <div id="preview" class="preview"></div>
-        </section>
+        <div id="messagesTab" class="tab-content active">
+            <section class="add-message">
+                <h2>Add New Message</h2>
+                <form id="addForm">
+                    <textarea 
+                        id="newMessage" 
+                        placeholder="Enter message text..." 
+                        maxlength="500"
+                        rows="3"
+                        required
+                    ></textarea>
+                    <div class="form-footer">
+                        <span id="charCount" class="char-count">0 / 500</span>
+                        <button type="submit">Add Message</button>
+                    </div>
+                </form>
+                <div id="preview" class="preview"></div>
+            </section>
 
-        <section class="messages-list">
-            <h2>Current Messages</h2>
-            <div id="messagesList"></div>
-        </section>
+            <section class="messages-list">
+                <h2>Current Messages</h2>
+                <div id="messagesList"></div>
+            </section>
+        </div>
+
+        <div id="winnersTab" class="tab-content">
+            <section class="winners-viewer">
+                <h2>Winner History</h2>
+                
+                <div class="search-box">
+                    <input 
+                        type="text" 
+                        id="winnerSearch" 
+                        placeholder="Search by character, realm, or Twitch username..."
+                        onkeyup="filterWinners()"
+                    >
+                    <span class="search-icon">🔍</span>
+                </div>
+
+                <div class="winners-stats">
+                    <span id="winnersCount">Loading...</span>
+                </div>
+
+                <div class="table-container">
+                    <table class="winners-table">
+                        <thead>
+                            <tr>
+                                <th class="sortable" onclick="sortWinners('date')" data-sort="date">
+                                    Date Won <span class="sort-indicator">↕</span>
+                                </th>
+                                <th class="sortable" onclick="sortWinners('character')" data-sort="character">
+                                    Character <span class="sort-indicator">↕</span>
+                                </th>
+                                <th class="sortable" onclick="sortWinners('realm')" data-sort="realm">
+                                    Realm <span class="sort-indicator">↕</span>
+                                </th>
+                                <th class="sortable" onclick="sortWinners('twitch')" data-sort="twitch">
+                                    Twitch Username <span class="sort-indicator">↕</span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="winnersTableBody">
+                            <!-- Populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="winnersEmpty" class="empty-state" style="display: none;">
+                    No winners found matching your search.
+                </div>
+            </section>
+        </div>
+
+        <div id="botControlTab" class="tab-content">
+            <section class="bot-control">
+                <h2>Worker Dyno Status</h2>
+                
+                <div class="status-box">
+                    <div class="status-display">
+                        <span class="status-label">Status:</span>
+                        <span id="workerStatus" class="status-value">
+                            <span class="status-indicator"></span>
+                            <span class="status-text">Loading...</span>
+                        </span>
+                    </div>
+                    <div id="workerUptime" class="uptime-display" style="display: none;"></div>
+                </div>
+
+                <div class="worker-actions">
+                    <button id="startWorkerBtn" class="btn btn-start" onclick="startWorker()" style="display: none;">
+                        ▶️ Start Worker
+                    </button>
+                    <button id="restartWorkerBtn" class="btn btn-restart" onclick="restartWorker()" style="display: none;">
+                        🔄 Restart Worker
+                    </button>
+                </div>
+            </section>
+
+            <section class="bot-config">
+                <h2>Bot Configuration</h2>
+                
+                <div class="warning-box">
+                    ⚠️ Changing this restarts the web server and the worker bot if it's running.<br>
+                    Any active raffle will be interrupted!
+                </div>
+
+                <form id="channelForm" onsubmit="saveTwitchChannel(event)">
+                    <div class="form-group">
+                        <label for="twitchChannel">Twitch Channel:</label>
+                        <input 
+                            type="text" 
+                            id="twitchChannel" 
+                            placeholder="Enter Twitch channel name..."
+                            required
+                        >
+                    </div>
+                    <button type="submit" class="btn btn-save">💾 Save Channel</button>
+                </form>
+            </section>
+        </div>
     </div>
 
     <script src="app.js"></script>

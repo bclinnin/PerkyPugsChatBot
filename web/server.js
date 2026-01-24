@@ -2,7 +2,12 @@ const express = require('express');
 const path = require('path');
 const authMiddleware = require('./middleware/auth');
 const messagesRouter = require('./routes/messages');
-require('dotenv').config();
+const winnersRouter = require('./routes/winners');
+const herokuRouter = require('./routes/heroku');
+
+// Load .env from parent directory
+const envPath = path.join(__dirname, '..', '.env');
+require('dotenv').config({ path: envPath });
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -19,6 +24,8 @@ app.use('/admin', express.static(path.join(__dirname, 'public')));
 
 // API routes
 app.use('/api/messages', authMiddleware, messagesRouter);
+app.use('/api/winners', authMiddleware, winnersRouter);
+app.use('/api/heroku', authMiddleware, herokuRouter);
 
 // Health check for Heroku
 app.get('/', (req, res) => {

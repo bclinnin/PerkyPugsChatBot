@@ -70,14 +70,28 @@ A modular Twitch chat bot for managing raffles and World of Warcraft character v
 
 ## Web Admin Panel
 
-A password-protected web interface for managing canned messages, accessible anytime (even when the bot is offline).
+A password-protected web interface for managing canned messages, viewing winner history, and controlling the bot, accessible anytime (even when the bot is offline).
 
 ### Features
+
+#### Canned Messages Tab
 - Add, edit, and delete canned messages
 - Enable/disable messages without deleting them
 - Live character counter (500 char Twitch limit)
 - Preview messages before saving
 - Works independently of the bot
+
+#### Winners Tab
+- View complete winner history from the database
+- Search by character name, realm, or Twitch username
+- Sortable columns (date, character, realm, Twitch)
+- Real-time filtering with dynamic search
+
+#### Bot Control Tab
+- **Worker Status**: View real-time bot status (running/stopped)
+- **Start/Restart Worker**: Control the bot dyno remotely
+- **Twitch Channel Config**: Change the channel the bot monitors
+- Auto-refresh status every 10 seconds
 
 ### Access
 - **Local Development:** `http://localhost:3000/admin`
@@ -86,14 +100,43 @@ A password-protected web interface for managing canned messages, accessible anyt
 ### Usage
 1. Navigate to the admin panel URL
 2. Enter your admin password (set via `ADMIN_PANEL_PASSWORD` environment variable)
-3. Manage messages through the web interface
-4. Changes are saved to the database immediately
-5. Bot loads latest messages when it starts
+3. Use the tab navigation to access different features:
+   - **Canned Messages**: Manage bot messages
+   - **Winners**: View raffle history
+   - **Bot Control**: Monitor and control the worker dyno
+
+### Bot Control Setup
+
+To enable bot control features, you need a Heroku API token:
+
+1. **Generate API Token:**
+   - Go to: https://dashboard.heroku.com/account/applications
+   - Click "Create authorization"
+   - Give it a description (e.g., "Bot Control Panel")
+   - Copy the generated token
+
+2. **Add to Environment Variables:**
+   ```bash
+   # Local (.env file - no quotes)
+   HEROKU_API_TOKEN=HRKU-your-token-here
+   HEROKU_APP_NAME=your-app-name
+   
+   # Heroku (via CLI)
+   heroku config:set HEROKU_API_TOKEN=your-token -a your-app-name
+   heroku config:set HEROKU_APP_NAME=your-app-name -a your-app-name
+   ```
+
+3. **Important Notes:**
+   - The API token grants full access to your Heroku app
+   - Do not use quotes around the token value in `.env`
+   - Changing the Twitch channel restarts the web server (brief downtime)
+   - If the worker is running when you change the channel, it will also restart (interrupts active raffles)
+   - If the worker is stopped, it stays stopped after channel changes
 
 ### Heroku Deployment
 The `Procfile` defines two process types:
 - **`web`** - Admin panel (always running, free on Heroku)
-- **`worker`** - Twitch bot (start manually for raffles)
+- **`worker`** - Twitch bot (start manually for raffles via admin panel or CLI)
 
 Both processes connect to the same PostgreSQL database, so admins can update messages anytime and the bot will use the latest messages when started.
 
@@ -254,6 +297,8 @@ Required environment variables:
 - `DATABASE_URL` - PostgreSQL connection string (format: `postgres://user:pass@host:port/dbname`)
 - `DISCORD_WEBHOOK_URL` - Discord webhook URL for posting winner lists (optional, format: `https://discord.com/api/webhooks/ID/TOKEN`)
 - `ADMIN_PANEL_PASSWORD` - Password for web admin panel access (optional, but required for admin panel)
+- `HEROKU_API_TOKEN` - Heroku Platform API token for bot control features (optional, required for Bot Control tab)
+- `HEROKU_APP_NAME` - Heroku app name for bot control features (optional, required for Bot Control tab)
 - `CURRENT_ENVIRONMENT` - Environment type: `local` or `production` (affects SSL settings)
 - `API_TIMEOUT_MS` - API request timeout in milliseconds (default: 10000)
 - `AOTC_MOUNT_ID` - Mount ID for AOTC validation (current: 2606 for Royal Voidwing)
@@ -308,11 +353,16 @@ The canned messages table includes an index on `enabled` and `displayorder` for 
   - Winners separated by faction (Alliance/Horde)
   - Copy-pasteable code blocks for easy in-game invites
   - Preserves original character name formatting with special characters
-- **Web Admin Panel**: Manage canned messages via browser
+- **Web Admin Panel**: Comprehensive browser-based management interface
   - Password-protected web interface
   - Works when bot is offline (perfect for Heroku worker model)
-  - Real-time message management with character counting
-  - Enable/disable messages without deletion
+  - **Canned Messages**: Real-time message management with character counting and enable/disable
+  - **Winners Viewer**: Search and sort complete winner history
+  - **Bot Control**: Monitor and control the worker dyno remotely
+    - Real-time worker status (running/stopped with uptime)
+    - Start/restart worker via web interface
+    - Change Twitch channel without SSH/CLI access
+    - Auto-refresh status every 10 seconds
 - **Message Throttling**: Prevents Twitch rate limit violations
 - **Permission System**: Admin/moderator command restrictions
 - **Database Integration**: Tracks winners to prevent duplicates (by Twitch account and character)

@@ -24,11 +24,14 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 20px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 h1 {
     color: #5865F2;
+    font-size: 24px;
+    white-space: nowrap;
 }
 
 h2 {
@@ -49,7 +52,15 @@ h2 {
     background: #c03537;
 }
 
-.add-message, .messages-list {
+.add-message {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.messages-list {
     background: white;
     padding: 20px;
     border-radius: 8px;
@@ -223,4 +234,296 @@ button[type="submit"]:hover, .btn-primary:hover {
     text-align: center;
     padding: 40px;
     color: #999;
+}
+
+/* Tab Navigation */
+.tabs {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.tab-btn {
+    padding: 10px 20px;
+    background: #e8e8e8;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: #555;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    white-space: nowrap;
+}
+
+.tab-btn:hover {
+    background: #d4d4d4;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+
+.tab-btn.active {
+    background: #5865F2;
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(88, 101, 242, 0.3);
+}
+
+.tab-btn.active:hover {
+    background: #4752C4;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(88, 101, 242, 0.4);
+}
+
+/* Tab Content */
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Winners Viewer */
+.winners-viewer {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.search-box {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 12px 40px 12px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.search-box .search-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+}
+
+.winners-stats {
+    margin-bottom: 15px;
+    color: #666;
+    font-size: 14px;
+}
+
+/* Table Styling */
+.table-container {
+    overflow-x: auto;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+}
+
+.winners-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.winners-table thead {
+    background: #f5f5f5;
+}
+
+.winners-table th {
+    text-align: left;
+    padding: 12px;
+    font-weight: 600;
+    color: #444;
+    border-bottom: 2px solid #ddd;
+}
+
+.winners-table td {
+    padding: 12px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.winners-table tbody tr:hover {
+    background: #f9f9f9;
+}
+
+.winners-table tbody tr.hidden {
+    display: none;
+}
+
+/* Sortable Headers */
+.winners-table th.sortable {
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+}
+
+.winners-table th.sortable:hover {
+    background: #e8e8e8;
+}
+
+.winners-table th .sort-indicator {
+    font-size: 12px;
+    color: #999;
+    margin-left: 5px;
+}
+
+.winners-table th.sort-asc .sort-indicator::after {
+    content: '↑';
+    color: #5865F2;
+}
+
+.winners-table th.sort-desc .sort-indicator::after {
+    content: '↓';
+    color: #5865F2;
+}
+
+.winners-table th.sort-asc .sort-indicator,
+.winners-table th.sort-desc .sort-indicator {
+    display: none;
+}
+
+/* Bot Control */
+.bot-control, .bot-config {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.status-box {
+    background: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.status-display {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+}
+
+.status-label {
+    font-weight: 600;
+    color: #444;
+}
+
+.status-value {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.status-indicator.status-running {
+    background: #57F287;
+    box-shadow: 0 0 8px rgba(87, 242, 135, 0.6);
+}
+
+.status-indicator.status-stopped {
+    background: #747f8d;
+}
+
+.status-indicator.status-error {
+    background: #ed4245;
+}
+
+.status-indicator.status-unknown {
+    background: #faa61a;
+}
+
+.status-text {
+    font-weight: 500;
+}
+
+.uptime-display {
+    margin-top: 10px;
+    color: #666;
+    font-size: 14px;
+}
+
+.worker-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-start {
+    background: #57F287;
+    color: white;
+    padding: 10px 20px;
+    font-size: 15px;
+}
+
+.btn-start:hover {
+    background: #3BA55D;
+}
+
+.btn-restart {
+    background: #5865F2;
+    color: white;
+    padding: 10px 20px;
+    font-size: 15px;
+}
+
+.btn-restart:hover {
+    background: #4752C4;
+}
+
+.warning-box {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 20px;
+    color: #856404;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #444;
+}
+
+.form-group input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.form-group input[type="text"]:focus {
+    outline: none;
+    border-color: #5865F2;
+    box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.1);
+}
+
+.btn-save {
+    background: #5865F2;
+    color: white;
+    padding: 10px 20px;
+    font-size: 15px;
 }
