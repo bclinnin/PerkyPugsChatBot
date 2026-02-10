@@ -61,12 +61,22 @@ describe('RaffleService', () => {
 
     describe('validateCharacterInfo', () => {
         it('should return valid for correct character', () => {
-            const characterSummary = {
-                data: {
-                    level: GAME.MAX_LEVEL,
-                    is_remix: false
+        const characterSummary = {
+            data: {
+                name: 'Testchar',
+                level: GAME.MAX_LEVEL,
+                is_remix: false,
+                realm: {
+                    name: 'Test Realm',
+                    slug: 'test-realm',
+                    id: 1
+                },
+                faction: {
+                    type: 'ALLIANCE',
+                    name: 'Alliance'
                 }
-            };
+            }
+        };
 
             const result = raffleService.validateCharacterInfo(characterSummary);
             expect(result.valid).toBe(true);
@@ -75,8 +85,18 @@ describe('RaffleService', () => {
         it('should return invalid for wrong level', () => {
             const characterSummary = {
                 data: {
+                    name: 'Testchar',
                     level: GAME.MAX_LEVEL - 10, // Test with level below max
-                    is_remix: false
+                    is_remix: false,
+                    realm: {
+                        name: 'Test Realm',
+                        slug: 'test-realm',
+                        id: 1
+                    },
+                    faction: {
+                        type: 'ALLIANCE',
+                        name: 'Alliance'
+                    }
                 }
             };
 
@@ -88,8 +108,18 @@ describe('RaffleService', () => {
         it('should return invalid for remix character', () => {
             const characterSummary = {
                 data: {
+                    name: 'Testchar',
                     level: GAME.MAX_LEVEL,
-                    is_remix: true
+                    is_remix: true,
+                    realm: {
+                        name: 'Test Realm',
+                        slug: 'test-realm',
+                        id: 1
+                    },
+                    faction: {
+                        type: 'ALLIANCE',
+                        name: 'Alliance'
+                    }
                 }
             };
 

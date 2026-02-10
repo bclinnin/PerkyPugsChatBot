@@ -69,9 +69,16 @@ class RaffleService {
             return;
         }
 
+        // Extract canonical names from Blizzard API response
+        // This ensures we get the proper realm name with apostrophes (e.g., "Kel'Thuzad")
+        // and proper character name casing (e.g., "Orlki" not "orlki")
+        const canonicalCharacterName = characterSummary.data.name;
+        const canonicalRealmName = characterSummary.data.realm.name;
+        const canonicalFormat = `${canonicalCharacterName}-${canonicalRealmName}`;
+
         const playerFaction = characterSummary.data.faction.type;
         this.state.addPlayerToRaffle(realmAndCharacterName, tags.username, playerFaction);
-        this.state.addOriginalFormat(realmAndCharacterName, originalFormat);
+        this.state.addOriginalFormat(realmAndCharacterName, canonicalFormat);
         this.messageService.addSuccessfulEnter(tags.username);
     }
 
